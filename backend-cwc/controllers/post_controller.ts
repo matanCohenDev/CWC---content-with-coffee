@@ -52,7 +52,6 @@ const getPostById = async (req: Request, res: Response) => {
 const getPostByUserId = async (req: Request, res: Response) => {
     try {
         const userId = req.user?._id; 
-        console.log(userId);
         const posts = await Post.find({userId});
         if (!posts) {
             res.status(404).json({ message: "No posts found" });
