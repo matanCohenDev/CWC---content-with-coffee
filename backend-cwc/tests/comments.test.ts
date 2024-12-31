@@ -49,6 +49,8 @@ beforeAll(async () => {
 
 afterAll(async () => {
     console.log("server closing");
+    await User.deleteMany();
+    await Post.deleteMany();
     await mongoose.connection.close();
 });
 
