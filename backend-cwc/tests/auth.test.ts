@@ -8,6 +8,7 @@ beforeAll(async () => {
     console.log("Jest starting!");
     await connectDB();
     await User.deleteMany();
+    await Post.deleteMany();
 });
 
 afterAll(async () => {
@@ -17,9 +18,7 @@ afterAll(async () => {
 
 type UserType = UserInterface & {
     accessToken?: string;
-    refreshToken?: string;
 };
-
   
 const testUser: UserType = {
     email: "test@user.com",
@@ -29,7 +28,6 @@ const testUser: UserType = {
     favorite_coffee: "test coffee",
 }
   
-
 const baseUrl = "/api/auth";
 
 describe("Auth Tests", () => {
