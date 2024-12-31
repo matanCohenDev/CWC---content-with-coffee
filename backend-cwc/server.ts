@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import AuthRoutes from './routes/auth_routes';
 import PostRoutes from './routes/post_routes';
 import CommentRoutes from './routes/comment_routes';
+import LikeRoutes from './routes/like_routes';
 
 dotenv.config();
 
@@ -28,5 +29,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api/auth', AuthRoutes);
 app.use('/api/post', PostRoutes);
 app.use('/api/comment', CommentRoutes);
+app.use('/api/like', LikeRoutes);
 
 export default app;
