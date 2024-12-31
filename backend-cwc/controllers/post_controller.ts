@@ -1,7 +1,5 @@
-import { Express , Request , Response , NextFunction } from "express";
-import Post, {PostInterface} from "../models/post_model";
-import jwt from "jsonwebtoken";
-import { Document } from "mongoose";
+import { Request , Response } from "express";
+import Post from "../models/post_model";
 
 const createPost = async (req: Request, res: Response) => {
     try {

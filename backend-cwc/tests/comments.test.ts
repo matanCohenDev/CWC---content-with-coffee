@@ -95,7 +95,9 @@ describe("Comment Tests", () => {
     });
 
     test("Get comments by postId", async () => {
-        const response = await request(app).get(baseUrl + "/getCommentsByPostId/" + testPost._id);
+        const response = await request(app)
+        .get(baseUrl + "/getCommentByPostId/" + testComment.postId)
+        .set("Authorization", `Bearer ${testUser.accessToken}`);
         expect(response.status).toBe(200);
         expect(response.body).toHaveProperty("success");
         expect(response.body.comments.length).toBe(1);
