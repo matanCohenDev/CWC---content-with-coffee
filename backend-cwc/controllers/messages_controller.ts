@@ -102,14 +102,12 @@ const messageRead = async (req: Request, res: Response) => {
 const deleteMessage = async (req: Request, res: Response) => {
     try {
         const { messageId } = req.body;
-        console.log(messageId);
         if (!messageId) {
             res.status(400).json({ success: false, message: "MessageId is required" });
             return;
         }
         
         const message = await Message.findByIdAndDelete(messageId);
-        console.log(message);
         if (!message) {
             res.status(404).json({ success: false, message: "Message not found" });
             return;

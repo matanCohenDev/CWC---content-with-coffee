@@ -1,0 +1,8 @@
+.footer {
+    margin-top: auto; /* ידחוף את הפוטר לחלק התחתון של המסך */
+    background-color: var(--brown);
+    color: var(--text-light);
+    text-align: center;
+    padding: 1rem;
+  }
+  

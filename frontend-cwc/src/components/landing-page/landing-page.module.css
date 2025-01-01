@@ -1,0 +1,19 @@
+:root {
+    /* משתני צבע לשימוש גלובלי */
+    --brown: #8B4513;         /* חום כהה */
+    --beige: #F5F5DC;         /* בז' בהיר */
+    --light-brown: #D2B48C;   /* חום בהיר */
+    --text-dark: #333;
+    --text-light: #fff;
+  }
+  
+  .landingPage {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--beige);
+    color: var(--text-dark);
+    direction: rtl; /* עבור תוכן בעברית */
+    width: 100vw;
+  }
+  
