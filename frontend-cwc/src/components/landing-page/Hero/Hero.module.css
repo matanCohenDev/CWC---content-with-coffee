@@ -1,0 +1,35 @@
+.hero {
+    background-color: var(--light-brown);
+    padding: 2rem 1rem;
+    text-align: center;
+  }
+  
+  .heroContent {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .heroContent h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .heroContent p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .ctaButton {
+    background-color: var(--brown);
+    color: var(--text-light);
+    border: none;
+    padding: 0.8rem 1.2rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .ctaButton:hover {
+    background-color: #723a0f;
+  }
+  

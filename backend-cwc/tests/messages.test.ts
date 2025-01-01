@@ -8,13 +8,14 @@ const testUser1: UserInterface & { accessToken?: string } = {
     email: 'testuser1@test.com',
     password: 'testpassword',
 };
+
 const testUser2: UserInterface & { accessToken?: string } = {
     email: 'testuser2@test.com',
     password: 'testpassword',
 };
+
 let testMessage1: MessageInterface;
 let testMessage2: MessageInterface;
-
 
 beforeAll(async () => {
     console.log('Jest starting!');
@@ -40,15 +41,13 @@ beforeAll(async () => {
         content: 'test message',
         messageRead: false,
     };
-
-
 });
 
 afterAll(async () => {
     console.log('server closing');
-   
     await mongoose.connection.close();
 });
+
 const baseUrl = '/api/messages';
 
 describe('Test Messages', () => {
@@ -81,8 +80,8 @@ describe('Test Messages', () => {
         expect(responseSendMessage2.body.messageId).toBeDefined();
         expect(responseSendMessage2.body).toHaveProperty('success', true);
         testMessage2.messageId = responseSendMessage2.body.messageId;
-
     });
+
     test('get all messages of a user', async () => {
         const responseGetAllMessages = await request(app)
         .get(baseUrl+"/GetAllMessages")
@@ -91,6 +90,7 @@ describe('Test Messages', () => {
         expect(responseGetAllMessages.status).toBe(200);
         expect(responseGetAllMessages.body.data).toHaveLength(2);
     });
+
     test('mark message as read', async () => {
         const responseMarkMessageAsRead = await request(app)
         .put(baseUrl+"/MarkMessageAsRead")
@@ -105,6 +105,7 @@ describe('Test Messages', () => {
         expect(responseGetMessagesBetweenUsers.status).toBe(200);
         expect(responseGetMessagesBetweenUsers.body.data[1].messageRead).toBe(true);
     });
+    
     test('delete message', async () => {
         const responseDeleteMessage = await request(app)
         .delete(baseUrl+"/DeleteMessage")
@@ -119,7 +120,6 @@ describe('Test Messages', () => {
         expect(responseGetAllMessages.status).toBe(200);
         expect(responseGetAllMessages.body.data).toHaveLength(1);
     });
-
 });
 
 
