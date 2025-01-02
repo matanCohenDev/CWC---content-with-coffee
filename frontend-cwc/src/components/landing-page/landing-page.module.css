@@ -1,19 +1,34 @@
-:root {
-    /* משתני צבע לשימוש גלובלי */
-    --brown: #8B4513;         /* חום כהה */
-    --beige: #F5F5DC;         /* בז' בהיר */
-    --light-brown: #D2B48C;   /* חום בהיר */
-    --text-dark: #333;
-    --text-light: #fff;
-  }
-  
-  .landingPage {
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.headerAndHeroContainer {
+    background-image: url('src/assets/pics/landingPage-pics/home-bg.png');
+    background-repeat: no-repeat; 
+    background-size: cover; 
+    background-position: center; 
+    width: 100vw;
+    height: 80vh;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    background-color: var(--beige);
-    color: var(--text-dark);
-    direction: rtl; /* עבור תוכן בעברית */
-    width: 100vw;
-  }
-  
+}
+
+.headerContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 10vh;
+}
+
+.heroContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 75vh; 
+}
+
+
+

@@ -1,19 +1,15 @@
-import React from 'react';
-import styles from './Header.module.css';
+import HeaderStyle from './Header.module.css';
 
-const Header: React.FC = () => {
-  return (
-    <header className={styles.header}>
-      <div className={styles.logo}>Coffee Lovers</div>
-      <nav className={styles.nav}>
-        <ul>
-          <li><a href="#features">תכונות</a></li>
-          <li><a href="#community">קהילה</a></li>
-          <li><a href="#contact">צור קשר</a></li>
-        </ul>
-      </nav>
-    </header>
-  );
-};
-
-export default Header;
+export default function Header(){
+    return (
+        <header>
+            <div className={HeaderStyle.header}>
+                <img src='src/assets/pics/landingPage-pics/logo.png' alt='header' className={HeaderStyle.logo} />
+                <div className={HeaderStyle.LogInSignUpContainer}>
+                    <button className={HeaderStyle.button}>Login</button>
+                    <button className={HeaderStyle.button}>Sign Up</button>
+                </div>
+            </div>
+        </header>
+    );
+}

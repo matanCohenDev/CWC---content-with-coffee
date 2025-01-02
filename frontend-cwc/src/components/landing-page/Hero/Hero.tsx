@@ -1,18 +1,14 @@
-import React from 'react';
-import styles from './Hero.module.css';
+import HeroStyle from './Hero.module.css';
+import SvgContainer from './Svg׳s container/Svg׳sContainer';
+import TitleContainer from './Title container/TitleContainer';
+import SubTitlesContainer from './SubTitles container/SubTitlesContainer';
 
-const Hero: React.FC = () => {
-  return (
-    <section className={styles.hero}>
-      <div className={styles.heroContent}>
-        <h1>ברוכים הבאים לרשת החברתית של חובבי הקפה</h1>
-        <p>
-          הצטרפו אלינו, שתפו תמונות, מתכונים וחוויות, והכירו חברים חדשים שמבינים בדיוק מהי האהבה הגדולה שלכם לקפה.
-        </p>
-        <button className={styles.ctaButton}>התחילו עכשיו</button>
-      </div>
-    </section>
-  );
-};
-
-export default Hero;
+export default function Hero() {
+    return (
+        <div className={HeroStyle.hero_container}>
+            <SvgContainer />
+            <TitleContainer />
+            <SubTitlesContainer />
+        </div>
+    );
+}
