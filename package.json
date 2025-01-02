@@ -7,7 +7,7 @@
     "check-install": "ts-node check-install.ts",
     "server": "cd backend-cwc && npx ts-node app.ts",
     "client": "cd frontend-cwc && npm run dev",
-    "dev": "npm run check-install && concurrently \"npm run server\" \"npm run client\""
+    "dev": "npm run check-install && concurrently --raw \"npm run server\" \"npm run client\""
   },
   "keywords": [],
   "author": "",
