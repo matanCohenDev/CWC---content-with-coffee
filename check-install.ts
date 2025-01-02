@@ -6,6 +6,7 @@ function installTsNode(): void {
     try {
         console.log('Checking if ts-node is installed...');
         execSync('npx ts-node -v', { stdio: 'ignore' });
+        execSync('@types/node --save-dev' , { stdio: 'ignore' });
         console.log('ts-node is already installed.');
     } catch {
         console.log('ts-node not found. Installing ts-node...');
