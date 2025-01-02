@@ -4,15 +4,21 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "cd backend-cwc && npm i && npx ts-node app.ts",
-    "client": "cd frontend-cwc && npm i && npm run dev",
-    "dev": "npm i && concurrently \"npm run server\" \"npm run client\""
+    "check-install": "ts-node check-install.ts",
+    "server": "cd backend-cwc && npx ts-node app.ts",
+    "client": "cd frontend-cwc && npm run dev",
+    "dev": "npm run check-install && concurrently \"npm run server\" \"npm run client\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.4",
+    "ts-node": "^10.9.2"
   }
 }
