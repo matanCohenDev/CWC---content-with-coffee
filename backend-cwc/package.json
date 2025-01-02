@@ -3,10 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest --detectOpenHandles --forceExit --runInBand",
-    "server": "npx ts-node app.ts",
-    "client": "cd .. && cd frontend-cwc && npm run dev",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "test": "jest --detectOpenHandles --forceExit --runInBand"
   },
   "keywords": [],
   "author": "",
