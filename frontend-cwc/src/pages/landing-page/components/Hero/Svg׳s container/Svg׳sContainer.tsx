@@ -1,7 +1,7 @@
 import HeroSvgContainer from './Svg׳sStyle.module.css'
-import CoffeeBean from '../../../../assets/svg/CoffeeBean.svg';
-import CoffeeMachine from '../../../../assets/svg/CoffeeMachine.svg';
-import CoffeeCup from '../../../../assets/svg/CoffeeCup.svg';
+import CoffeeBean from '../../../../../assets/svg/CoffeeBean.svg';
+import CoffeeMachine from '../../../../../assets/svg/CoffeeMachine.svg';
+import CoffeeCup from '../../../../../assets/svg/CoffeeCup.svg';
 
 export default function SvgContainer() {
     return (

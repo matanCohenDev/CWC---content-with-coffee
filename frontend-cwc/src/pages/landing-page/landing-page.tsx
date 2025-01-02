@@ -1,5 +1,5 @@
-import Header from "./Header/Header";
-import Hero from "./Hero/Hero";
+import Header from "./components/Header/Header";
+import Hero from "./components/Hero/Hero";
 import LandingPageStyles from './Landing-page.module.css';
 
 export default function LandingPage() {
