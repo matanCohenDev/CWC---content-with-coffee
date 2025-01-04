@@ -1,6 +1,7 @@
 import Header from "./components/Header/Header";
 import Hero from "./components/Hero/Hero";
 import LandingPageStyles from './Landing-page.module.css';
+import WhyToJoinUs from "./components/WhyToJoinUs/whyToJoinUs";
 
 export default function LandingPage() {
     return (
@@ -11,6 +12,10 @@ export default function LandingPage() {
             <div className={LandingPageStyles.heroContainer}>
                 <Hero />
             </div>
+            <div className={LandingPageStyles.whyToJoinUsContainer}>
+                <WhyToJoinUs />
+            </div>
+
         </div>
     );
 }
