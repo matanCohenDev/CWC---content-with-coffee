@@ -1,0 +1,109 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.title {
+    color: #2a2929;
+    font-family: Quicksand, sans-serif;
+    font-size: 50px;
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 2px 4px 6px rgba(0, 0, 0, 0.15);
+    margin-bottom: 40px;
+}
+
+.rowContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    gap: 40px;
+    width: 100%;
+}
+
+.columnContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.insideContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+    background: #fff;
+    width: 380px;
+    height: 250px;
+    border-radius: 20px;
+    box-shadow: 0px 4px 10px rgba(209, 0, 0, 0.12);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.insideContainer:hover {
+    transform: translateY(-8px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.scrollDownContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 40px;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+    border: 1px solid #4a4a4a;
+}
+
+.scrollDownContainer:hover {
+    transform: scale(1.1);
+}
+
+.image {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
+
+.ScrollDown {
+    color: #4a4a4a;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.text {
+    color: #333;
+    font-size: 18px;
+    font-weight: 500;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .rowContainer {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .insideContainer {
+        width: 90%;
+        height: auto;
+    }
+
+    .title {
+        font-size: 40px;
+    }
+}
