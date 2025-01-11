@@ -1,0 +1,229 @@
+.coffeeExperienceContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5%;
+    text-align: center;
+    background-color: #C4B6AB;
+    position: relative; 
+    overflow: hidden; 
+}
+
+.featherSvg {
+    position: absolute;
+    top: 50%;
+    left: 20%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+    z-index: 1 !important; 
+    opacity: 0.5 !important; 
+    pointer-events: none; 
+}
+
+.heartSvg {
+    position: absolute;
+    top: 50%;
+    left: 83%;
+    width: 80%;
+    height: 80%;
+    transform: translate(-50%, -50%);
+    z-index: 1 !important; 
+    opacity: 0.5 !important; 
+    pointer-events: none; 
+}
+  
+.coffeeExperienceContentContainerForAll{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    margin-right: 10%;
+    z-index: 1;
+}
+
+.coffeeExperienceTitleContainer {
+    width:50%;
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.3s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.coffeeExperienceTitleContainer ::hover {
+    transform: scale(1.05);
+}   
+
+.coffeeExperienceMainTitle{
+    color: #FFF;
+    text-shadow: 0px 6px 4px rgba(0, 0, 0, 0.50);
+    font-family: Quicksand;
+    font-size: 45px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.coffeeExperienceTitle {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #523F31;
+}
+
+.coffeeExperienceSubtitle {
+    font-size: 1.5rem;
+    color: #6A4C3A;
+}
+
+.coffeeExperienceContentContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.cardStackContainer {
+    position: relative;
+    width: 400px;
+    height: 500px;
+    margin-top: 2%;
+}
+
+.card {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out;
+}
+
+.cardImage {
+    width: 100%;
+    height: 60%;
+    object-fit: cover;
+}
+
+.cardContent {
+    text-align: center;
+}
+
+.cardContent h3 {
+    font-size: 1.7rem;
+    color: #523F31;
+}
+
+.designation {
+    font-size: 1.3rem;
+    color: #6A4C3A;
+    font-weight: bold;
+}
+
+.text {
+    font-size: 1rem;
+    color: #6A4C3A;
+    margin-top: 5px;
+}
+
+@media screen and (max-width: 768px) {
+    .coffeeExperienceContentContainerForAll {
+        flex-direction:column-reverse;
+        gap: 5%;
+    }
+
+    .coffeeExperienceTitleContainer{
+        width: 100%;
+        margin-left: 10%;
+    }
+
+    .coffeeExperienceTitle {
+        font-size: 2rem;
+    }
+
+    .featherSvg {
+        top:30%;
+    }
+
+    .cardStackContainer {
+        width: 100%;margin-left: 10%;
+    }
+
+    .cardContent h3 {
+        font-size: 1.2rem;
+    }
+
+    .text {
+        font-size: 0.8rem;
+    }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .coffeeExperienceContentContainerForAll {
+        flex-direction:column-reverse;
+        gap: 5%;
+    }
+
+    .coffeeExperienceTitleContainer{
+        width: 100%;
+        margin-left: 10%;
+    }
+
+    .coffeeExperienceTitle {
+        font-size: 2rem;
+    }
+
+    .featherSvg {
+        top:30%;
+    }
+
+    .cardStackContainer {
+        width: 100%;margin-left: 10%;
+    }
+
+    .cardContent h3 {
+        font-size: 1.2rem;
+    }
+
+    .text {
+        font-size: 0.8rem;
+    }
+}
+
+@media screen and (min-width: 1025px) and (max-width: 1440px) {
+    .coffeeExperienceContentContainerForAll {
+        flex-direction:column-reverse;
+        gap: 5%;
+    }
+
+    .coffeeExperienceTitleContainer{
+        width: 100%;
+        margin-left: 10%;
+    }
+
+    .coffeeExperienceTitle {
+        font-size: 2rem;
+    }
+
+    .featherSvg {
+        top:30%;
+    }
+
+    .cardStackContainer {
+        width: 100%;margin-left: 10%;
+    }
+
+    .cardContent h3 {
+        font-size: 1.2rem;
+    }
+
+    .text {
+        font-size: 0.8rem;
+    }
+}

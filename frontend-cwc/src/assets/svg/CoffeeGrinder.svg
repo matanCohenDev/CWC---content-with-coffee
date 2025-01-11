@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" fill="none" stroke="#EADDD3" stroke-width="1">
+  <!-- קערת קפה עליונה -->
+  <path d="M15 10 C10 10, 5 13, 5 18 C5 22, 10 25, 15 25 L35 25 C40 25, 45 22, 45 18 C45 13, 40 10, 35 10 Z" />
+
+  <!-- גוף מטחנת הקפה -->
+  <rect x="12" y="25" width="26" height="15" rx="2" />
+
+  <!-- ידית הטחינה -->
+  <path d="M25 5 L25 10 M23 5 L27 5" stroke-width="2" />
+  
+  <!-- בסיס מטחנת הקפה -->
+  <rect x="10" y="40" width="30" height="7" rx="1" />
+
+  <!-- חור ידית הטחינה -->
+  <circle cx="25" cy="5" r="1.5" />
+</svg>
