@@ -1,40 +1,111 @@
-.header{
+
+.header {
+    width: 100%;
+    background-color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    max-height: 13%;
+}
+
+.container {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    height: 10vh;
-    width: 100vw;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    justify-content: space-between;
+    width: 90%;
+    margin: auto;
 }
 
 .logo {
-    width:120px;
-    height:120px;
+    width: 150px;
+    height: auto;
 }
 
-.LogInSignUpContainer {
+.navbar {
     display: flex;
-    flex-direction: row;
-    width:15%;
-    gap:3%;
+    gap: 20px;
 }
 
-.button{
-    background: none;
-    border: 0.5px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
+.navbarItem {
     text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 20px;
+    font-size: 18px;
+    color: #2D1E17;
+    font-weight: 500;
+    transition: 0.3s ease-in-out;
 }
 
-.button:hover{
-    background-color: rgba(255, 255, 255, 0.3);
-    color: black;
-    transition: 0.6s;
+.navbarItem:hover {
+    color: #6A4C38;
+}
+
+.userButton {
+    background: none;
+    border: 1px solid #2D1E17;
+    padding: 8px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.userButton:hover {
+    background-color: #2D1E17;
+    color: white;
+}
+
+@media screen and (max-width: 768px) {
+    .hanburgerAndLogin{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .navbar {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        left: 0;
+        width: 100%;
+        background-color: white;
+        padding: 15px 0;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    .open {
+        display: flex;
+    }
+
+    .hamburger {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+    }
+
+    .bar {
+        width: 25px;
+        height: 3px;
+        background-color: #2D1E17;
+        transition: 0.4s;
+    }
+
+    .barOpen:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .barOpen:nth-child(2) {
+        opacity: 0;
+    }
+
+    .barOpen:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+    .container {
+        width: 95%;
+    }
 }

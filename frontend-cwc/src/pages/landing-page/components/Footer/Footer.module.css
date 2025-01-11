@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+:root {
+  --primary-color: #C4A484;
+  --background-color: #1A120B;
+  --text-color: #EADDD3;
+  --border-radius: 12px;
+}
+
+.footer {
+  background-image: url('/src/assets/pics/landingPage-pics/footer_background.png');
+  padding: 50px 0;
+  color: var(--text-color);
+  font-family: "Poppins", sans-serif;
+}
+
+.container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: auto;
+  flex-wrap: wrap;
+  gap:40%;
+}
+
+.footerSection {
+  flex: 1;
+  padding: 20px;
+  min-width: 250px;
+}
+
+.footerTitle{
+  margin-top:50px;
+}
+
+.logo {
+  max-width: 200px;
+  margin-bottom: 15px;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.socialIcons svg {
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.socialIcons svg:hover {
+  transform: scale(1.1);
+  color: var(--primary-color);
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.footerSection p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 5px;
+}
+
+.footerSection a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.footerSection a:hover {
+  text-decoration: underline;
+}
+
+.specialNote {
+  font-style: italic;
+  color: var(--primary-color);
+}
+
+.footerBottom {
+  text-align: center;
+  padding: 15px 0;
+  font-size: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    text-align: center;
+    gap: 20px;
+  }
+
+  .socialIcons {
+    justify-content: center;
+  }
+
+  .footerSection {
+    padding: 10px 0;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .container {
+    text-align: center;
+    gap: 20px;
+  }
+
+  .socialIcons {
+    justify-content: center;
+  }
+}

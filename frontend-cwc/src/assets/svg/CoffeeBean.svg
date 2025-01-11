@@ -2,20 +2,20 @@
   <path 
     d="M32 2C22 2 12 14 12 30s10 28 20 28 20-12 20-28S42 2 32 2z" 
     fill="none" 
-    stroke="#FAD48A" 
-    stroke-width="2" />
+    stroke="#EADDD3" 
+    stroke-width="1" />
 
   <path 
     d="M30 6c-4 8-8 12-8 24s4 16 8 22" 
     fill="none" 
-    stroke="#FAD48A" 
-    stroke-width="2" 
+    stroke="#EADDD3" 
+    stroke-width="1" 
     stroke-linecap="round" />
 
   <path 
     d="M34 6c4 8 8 12 8 24s-4 16-8 22" 
     fill="none" 
-    stroke="#FAD48A" 
-    stroke-width="2" 
+    stroke="#EADDD3" 
+    stroke-width="1" 
     stroke-linecap="round" />
 </svg>
