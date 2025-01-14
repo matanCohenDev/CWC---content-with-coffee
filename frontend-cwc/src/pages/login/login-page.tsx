@@ -14,12 +14,10 @@ const LoginForm: React.FC = () => {
 
       <div className={styles.inputBox}>
         <input type="text" placeholder="Username" required />
-        <i className="bx bxs-user"></i>
       </div>
 
       <div className={styles.inputBox}>
         <input type="password" placeholder="Password" required />
-        <i className="bx bxs-lock-alt"></i>
       </div>
 
       
