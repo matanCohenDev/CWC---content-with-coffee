@@ -3,7 +3,7 @@ import styles from "./login-page.module.css";
 import { useForm, SubmitHandler } from "react-hook-form";
 
 type LoginInputs = {
-  username: string;
+  email: string;
   password: string;
 };
 
@@ -16,11 +16,11 @@ const LoginForm: React.FC = () => {
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
-      const response = await fetch("/login", {
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: data.username,
+          email: data.email,      
           password: data.password,
         }),
       });
@@ -40,15 +40,15 @@ const LoginForm: React.FC = () => {
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <h1>Login</h1>
 
-      {/* Username */}
+      {/* Email */}
       <div className={styles.inputBox}>
         <input
           type="text"
-          placeholder="Username"
-          {...register("username", { required: "Username is required" })}
+          placeholder="Email"
+          {...register("email", { required: "Email is required" })}
         />
-        {errors.username && (
-          <p className={styles.error}>{errors.username.message}</p>
+        {errors.email && (
+          <p className={styles.error}>{errors.email.message}</p>
         )}
       </div>
 
