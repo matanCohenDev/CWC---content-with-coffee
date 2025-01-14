@@ -1,0 +1,22 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  
+  
+  .btn {
+    padding: 10px 20px;
+    background: linear-gradient(90deg, var(--light-bg), var(--medium-bg));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
