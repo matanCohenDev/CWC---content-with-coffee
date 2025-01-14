@@ -61,7 +61,6 @@ type FormInputs = {
             
             {...register("name")}
           />
-          <i className="bx bxs-user"></i>
           {errors.name && <p className={styles.error}>{errors.name.message}</p>}
         </div>
   
@@ -78,7 +77,6 @@ type FormInputs = {
               },
             })}
           />
-          <i className="bx bxs-envelope"></i>
           {errors.email && (
             <p className={styles.error}>{errors.email.message}</p>
           )}
@@ -97,7 +95,6 @@ type FormInputs = {
               },
             })}
           />
-          <i className="bx bxs-lock-alt"></i>
           {errors.password && (
             <p className={styles.error}>{errors.password.message}</p>
           )}
@@ -114,7 +111,6 @@ type FormInputs = {
                 value === watch("password") || "Passwords do not match",
             })}
           />
-          <i className="bx bxs-lock-alt"></i>
           {errors.confirmPassword && (
             <p className={styles.error}>{errors.confirmPassword.message}</p>
           )}
@@ -127,7 +123,6 @@ type FormInputs = {
             placeholder="Bio"
             {...register("bio")}
           />
-          <i className="bx bxs-user"></i>
           {errors.bio && <p className={styles.error}>{errors.bio.message}</p>}
         </div>
   
@@ -138,7 +133,6 @@ type FormInputs = {
             placeholder="Favorite Coffee"
             {...register("favorite_coffee")}
           />
-          <i className="bx bxs-coffee"></i>
           {errors.favorite_coffee && (
             <p className={styles.error}>{errors.favorite_coffee.message}</p>
           )}
@@ -151,7 +145,6 @@ type FormInputs = {
             placeholder="Location"
             {...register("location")}
           />
-          <i className="bx bxs-map"></i>
           {errors.location && (
             <p className={styles.error}>{errors.location.message}</p>
           )}
