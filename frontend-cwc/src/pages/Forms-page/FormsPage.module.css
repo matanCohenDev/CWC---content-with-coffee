@@ -110,14 +110,6 @@ h1 {
   font-weight: 400;
 }
 
-.inputBox i {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 20px;
-  color: var(--accent-coffee); 
-}
 
 .btn {
   width: 100%;
@@ -132,28 +124,13 @@ h1 {
   font-weight: 600;
 }
 
-.forgotLink {
-  margin: -15px 0 15px;
-}
 
-.forgotLink a {
-  font-size: 14.5px;
-  color: var(--dark-text);
-  text-decoration: none;
-}
 
 p {
   font-size: 14.5px;
   margin: 15px 0;
   color: var(--dark-text);
 }
-
-/* Social icons (optional) */
-.socialIcons {
-  display: flex;
-  justify-content: center;
-}
-
 
 
 .togglePanel {
