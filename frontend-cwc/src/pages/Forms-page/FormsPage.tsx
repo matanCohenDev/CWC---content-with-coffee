@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import LoginForm from ".././login/login-page";
 import RegisterForm from ".././register-page/Register-page";
 import styles from "./FormsPage.module.css";
+import { useNavigate } from "react-router-dom";
 
 
 
 
 const FormsPage: React.FC = () => {
   const [isRegister, setIsRegister] = useState(false);
+  const navigate = useNavigate();
 
   const toggleForm = (registerMode: boolean) => {
     setIsRegister(registerMode);
@@ -15,6 +17,9 @@ const FormsPage: React.FC = () => {
 
   return (
     <div className={styles.formsPageWrapper}>
+      <button className={styles.backButton} onClick={() => navigate("/")}>
+        &larr; Back to Home
+      </button>
 
     <div
       className={`${styles.container} ${
