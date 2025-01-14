@@ -15,15 +15,6 @@
   border-radius: 8px;
 }
 
-.inputBox i {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 20px;
-  color: #888;
-}
-
 .btn {
   padding: 10px 20px;
   background: linear-gradient(90deg, var(--light-bg), var(--medium-bg));
