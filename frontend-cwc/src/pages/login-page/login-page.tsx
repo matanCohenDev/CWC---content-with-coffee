@@ -1,6 +1,9 @@
 import React from "react";
 import styles from "./login-page.module.css";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { on } from "events";
+import { useGoogleLogin ,GoogleLogin } from "@react-oauth/google";
+
 
 type LoginInputs = {
   email: string;
@@ -35,6 +38,17 @@ const LoginForm: React.FC = () => {
       console.error("Error:", error);
     }
   };
+  const onGoogleLoginSuccess = async (response: any) => {
+    console.log("Google login success:", response);
+  };
+
+  const onGoogleLoginFailure = async() => {
+    console.error("Google login failed");
+  };
+  const login = useGoogleLogin({
+    onSuccess: onGoogleLoginSuccess,
+    onError: onGoogleLoginFailure,
+  });
 
   return (
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
@@ -66,6 +80,9 @@ const LoginForm: React.FC = () => {
 
       <button type="submit" className={styles.btn}>
         Login
+      </button>
+      <button onClick={() => login()} className={styles.btn}>
+          Login with Google
       </button>
     </form>
   );
