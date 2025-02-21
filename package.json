@@ -4,9 +4,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "cd backend-cwc && npm i && npx ts-node app.ts",
-    "client": "cd frontend-cwc && npm i && npm run dev",
-    "dev": "npm i && concurrently \"npm run server\" \"npm run client\""
+    "server": "cd backend-cwc && npm i && cp .env_dev .env && npx ts-node app.ts",
+    "server_prod": "cd backend-cwc && npm i && cp .env_prod .env && npx ts-node app.ts",
+    "client": "cd frontend-cwc && cp .env_dev .env && npm i && npm run dev",
+    "client_prod": "cd frontend-cwc && cp .env_prod .env && npm i && npm run build",
+    "dev": "npm i && concurrently \"npm run server\" \"npm run client\"",
+    "prod": "npm i && npm run client_prod && npm run server_prod "
+
   },
   "keywords": [],
   "author": "",

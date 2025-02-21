@@ -2,7 +2,7 @@ import HeroStyle from './Hero.module.css';
 import CoffeeGrinder from '../../../../assets/svg/CoffeeGrinder.svg';
 import CoffeeCup from '../../../../assets/svg/CoffeeCup.svg';
 import CoffeeBeans from '../../../../assets/svg/CoffeeBean.svg';
-import coffeeMachine from '../../../../assets/svg/coffeeMachine.svg';
+import coffeeMachine from '../../../../assets/svg/CoffeeMachine.svg';
 
 export default function Hero() {
     return (
