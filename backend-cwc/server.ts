@@ -1,7 +1,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import mongoose from 'mongoose'; 
+import mongoose from 'mongoose';
+import cors from 'cors';
 import AuthRoutes from './routes/auth_routes';
 import PostRoutes from './routes/post_routes';
 import CommentRoutes from './routes/comment_routes';
@@ -21,7 +22,10 @@ export const connectDB = async () => {
 };
 
 const app = express();
-
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true, 
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
