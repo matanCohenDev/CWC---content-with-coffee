@@ -8,6 +8,7 @@ import PostRoutes from './routes/post_routes';
 import CommentRoutes from './routes/comment_routes';
 import LikeRoutes from './routes/like_routes';
 import MessagesRoutes from './routes/message_routes';
+import UserRoutes from './routes/user_routes';
 
 dotenv.config();
 
@@ -36,5 +37,6 @@ app.use('/api/post', PostRoutes);
 app.use('/api/comment', CommentRoutes);
 app.use('/api/like', LikeRoutes);
 app.use('/api/messages', MessagesRoutes);
+app.use('/api/user', UserRoutes);
 
 export default app;
