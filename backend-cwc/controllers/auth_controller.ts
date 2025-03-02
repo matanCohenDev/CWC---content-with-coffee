@@ -81,7 +81,6 @@ const login = async (req: Request, res: Response) => {
     if (!Array.isArray(user.refreshToken)) {
       user.refreshToken = [];
     }
-    user.refreshToken = [] ;
     user.refreshToken.push(refreshToken); 
     await user.save();
 
@@ -172,12 +171,20 @@ const verifyRefreshToken = (
 
 const logout = async (req: Request, res: Response) => {
   try {
+    const refreshToken = req.cookies.refreshToken;
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/api/auth/refresh",
     });
+    const user = await User.findById(req.user?._id);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    user.refreshToken = user.refreshToken?.filter((token) => token !== refreshToken) || [];
+    await user.save();
 
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
