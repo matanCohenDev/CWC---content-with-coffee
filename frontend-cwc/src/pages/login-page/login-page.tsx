@@ -1,8 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './login-page.module.css';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGoogleLogin } from '@react-oauth/google';
-import { loginUser,fetchUser } from '../../services/apiServices';
+import { loginUser, fetchUser } from '../../services/apiServices';
 import { useUser } from "../../context/UserContext";
 
 type LoginInputs = {
@@ -12,27 +13,29 @@ type LoginInputs = {
 
 const LoginForm: React.FC = () => {
   const { setUser } = useUser();
+  const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInputs>();
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
-      const result = await loginUser(data.email, data.password,setUser);
+      const result = await loginUser(data.email, data.password, setUser);
       localStorage.setItem("accessToken", result.accessToken);
 
-    
-    const user = await fetchUser();
-    if (user) {
-      setUser(user); 
+      const user = await fetchUser();
+      if (user) {
+        setUser(user);
+      }
+
+      console.log("Login success:", result);
+      navigate("/feed"); 
+    } catch (error) {
+      console.error("Error during login:", error);
     }
-    
-    console.log("Login success:", result);
-  } catch (error) {
-    console.error("Error during login:", error);
-  }
   };
 
   const onGoogleLoginSuccess = async (response: any) => {
     console.log('Google login success:', response);
+    navigate("/feed");
   };
 
   const onGoogleLoginFailure = async () => {
@@ -73,7 +76,7 @@ const LoginForm: React.FC = () => {
       </div>
 
       <button type="submit" className={styles.btn}>Login</button>
-      <button onClick={() => login()} className={styles.btn}>
+      <button type="button" onClick={() => login()} className={styles.btn}>
         Login with Google
       </button>
     </form>
