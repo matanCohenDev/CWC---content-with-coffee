@@ -6,6 +6,8 @@ import Sidebar from "./components/SideBar/SideBar";
 import DecorativeSvgs from "./components/DecorativeSvgs/DecorativeSvgs";
 import { Send } from "lucide-react";
 import logo from "../../assets/pics/landingPage-pics/logo.png";
+import CoffeeSmartChat from "./components/chatbot/chatbot"; 
+
 
 const Feed: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -30,6 +32,8 @@ const Feed: React.FC = () => {
       <PostCard />
       <PostCard />
       <BottomBar />
+      <CoffeeSmartChat />
+
     </div>
   );
 };

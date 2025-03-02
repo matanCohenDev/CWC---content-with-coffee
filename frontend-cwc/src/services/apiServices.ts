@@ -15,6 +15,7 @@ const api = axios.create({
   withCredentials: true,
 });
 
+
 export const loginUser = async (email: string, password: string, setUser: (user: User | null) => void) => {
   try {
     const response = await api.post('/api/auth/login', { email, password });
@@ -153,4 +154,16 @@ export const getUserIdFromToken = (token: string) => {
     return null;
   }
 };
+export const generateContent = async (prompt: string) => {
+  try {
+    const response = await api.post("/api/auth/generateContent", { message: prompt });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+
+
 
