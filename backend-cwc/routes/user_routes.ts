@@ -13,4 +13,6 @@ router.delete("/deleteUser/:id", UserControllers.deleteUser);
 
 router.put("/updateUser/:id", UserControllers.updateUser);
 
+
+
 export default router;

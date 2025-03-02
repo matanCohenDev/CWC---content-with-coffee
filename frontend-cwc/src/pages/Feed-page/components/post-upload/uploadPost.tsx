@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./uploadPost.module.css";
+import { createPost , uploadImage } from "../../../../services/apiServices";
 
 interface PostUploadProps {
   onClose: () => void;
@@ -7,8 +8,8 @@ interface PostUploadProps {
 
 const PostUpload: React.FC<PostUploadProps> = ({ onClose }) => {
   const [postContent, setPostContent] = useState<string>("");
-  const [images, setImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -17,37 +18,49 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose }) => {
     };
   }, []);
 
+  // בחירת תמונה (רק אחת)
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const files = Array.from(event.target.files);
-      setImages(files);
-      setImagePreviews(files.map(file => URL.createObjectURL(file)));
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0]; // לוקח רק תמונה אחת
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  const removeImage = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index);
-    const newPreviews = imagePreviews.filter((_, i) => i !== index);
-    setImages(newImages);
-    setImagePreviews(newPreviews);
+  // הסרת תמונה שנבחרה
+  const removeImage = () => {
+    setImage(null);
+    setImagePreview(null);
   };
 
-  const handlePost = () => {
-    if (!postContent && images.length === 0) {
+  // שליחת הפוסט לשרת
+  const handlePost = async () => {
+    if (!postContent && !image) {
       alert("You must write something or upload an image.");
       return;
     }
 
-    console.log("Post Data:", { postContent, images });
-
-    onClose();
+    try {
+      const response = await uploadImage(image as File, postContent);
+      if (!response) {
+        throw new Error("Failed to upload image");
+      }
+      const imageName = response.substring(15);
+      await createPost(postContent, imageName);
+      onClose(); 
+    } catch (error) {
+      console.error("Error uploading post:", error);
+      alert("Error uploading post. Please try again.");
+    }
   };
+  
 
   return (
     <div className={styles.overlay}>
       <div className={styles.uploadContainer}>
         <button onClick={onClose} className={styles.closeButton}>✖</button>
         <h2>Create a Post</h2>
+
         <div className={styles.postBox}>
           <textarea
             id="postContent"
@@ -56,29 +69,22 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose }) => {
             onChange={(e) => setPostContent(e.target.value)}
           />
         </div>
-    
-        {imagePreviews.length > 0 && (
+
+        {/* הצגת התמונה הנבחרת */}
+        {imagePreview && (
           <div className={styles.imagePreviewContainer}>
-            {imagePreviews.map((preview, index) => (
-              <div key={index} className={styles.imagePreviewWrapper}>
-                <img src={preview} alt={`Preview ${index}`} className={styles.imagePreview} />
-                <button onClick={() => removeImage(index)} className={styles.removeImage}>✖</button>
-              </div>
-            ))}
+            <img src={imagePreview} alt="Preview" className={styles.imagePreview} />
+            <button onClick={removeImage} className={styles.removeImage}>✖</button>
           </div>
         )}
 
         <div className={styles.actionsContainer}>
-          <div className={styles.actionsTitle}>Add to your post:</div>
+          <div className={styles.actionsTitle}>Add an image to your post:</div>
           <div className={styles.actions}>
-            <label className={styles.actionIcon} data-tooltip="Upload a photo/video">
+            <label className={styles.actionIcon} data-tooltip="Upload a photo">
               📷
-              <input type="file" accept="image/*" multiple onChange={handleImageChange} hidden />
+              <input type="file" accept="image/*" onChange={handleImageChange} hidden />
             </label>
-            <span className={styles.actionIcon} data-tooltip="Add location">📍</span>
-            <span className={styles.actionIcon} data-tooltip="Tag friends">👥</span>
-            <span className={styles.actionIcon} data-tooltip="Add a hashtag">#️⃣</span>
-            <span className={styles.actionIcon} data-tooltip="Rate your coffee">☕</span>
           </div>
         </div>
 

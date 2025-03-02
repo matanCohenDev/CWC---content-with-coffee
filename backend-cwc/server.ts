@@ -1,8 +1,11 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import cookieParser from "cookie-parser";
 import AuthRoutes from './routes/auth_routes';
 import PostRoutes from './routes/post_routes';
@@ -43,5 +46,39 @@ app.use('/api/like', LikeRoutes);
 app.use('/api/messages', MessagesRoutes);
 app.use('/api/user', UserRoutes);
 
+const uploadDir = path.join(__dirname , "uploads/posts");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadDir); 
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}_${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
+
+const upload = multer({ storage });
+
+app.post("/upload/post", upload.single("image"), (req: Request, res: Response): void => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ message: "No file uploaded" });
+      return;
+    }
+    const imageUrl = `/uploads/posts/${req.file.filename}`;
+    
+    res.json({ success: true, imageUrl});
+  } catch (error) {
+    console.error("Error uploading post:", error);
+    res.status(500).json({ message: "Failed to upload post" });
+  }
+});
+
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 export default app;
