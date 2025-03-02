@@ -2,7 +2,8 @@ import React from 'react';
 import styles from './login-page.module.css';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGoogleLogin } from '@react-oauth/google';
-import { loginUser } from '../../services/apiServices';
+import { loginUser,fetchUser } from '../../services/apiServices';
+import { useUser } from "../../context/UserContext";
 
 type LoginInputs = {
   email: string;
@@ -10,15 +11,24 @@ type LoginInputs = {
 };
 
 const LoginForm: React.FC = () => {
+  const { setUser } = useUser();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInputs>();
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
-      const result = await loginUser(data.email, data.password);
-      console.log('Login success:', result);
-    } catch (error) {
-      console.error('Error during login:', error);
+      const result = await loginUser(data.email, data.password,setUser);
+      localStorage.setItem("accessToken", result.accessToken);
+
+    
+    const user = await fetchUser();
+    if (user) {
+      setUser(user); 
     }
+    
+    console.log("Login success:", result);
+  } catch (error) {
+    console.error("Error during login:", error);
+  }
   };
 
   const onGoogleLoginSuccess = async (response: any) => {
