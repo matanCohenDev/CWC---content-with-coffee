@@ -44,12 +44,12 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     },
     followers_count:{
-        type: Number,
-        default: 0
+        type: [String],
+        default: []
     },
     following_count:{
-        type: Number,
-        default: 0
+        type: [String],
+        default: []
     },
     posts_count:{
         type: Number,

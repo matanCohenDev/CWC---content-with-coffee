@@ -1,27 +1,21 @@
 import React, { useState, useEffect } from "react";
 import styles from "./uploadPost.module.css";
 
-const PostUpload: React.FC = () => {
+interface PostUploadProps {
+  onClose: () => void;
+}
+
+const PostUpload: React.FC<PostUploadProps> = ({ onClose }) => {
   const [postContent, setPostContent] = useState<string>("");
-  const [showModal, setShowModal] = useState<boolean>(true);
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   useEffect(() => {
-    if (showModal) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [showModal]);
-
-  const onButtonClick = () => {
-    setShowModal(false);
-  };
+  }, []);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -44,28 +38,20 @@ const PostUpload: React.FC = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("content", postContent);
-    images.forEach((image, index) => {
-      formData.append(`image${index}`, image);
-    });
-
     console.log("Post Data:", { postContent, images });
 
-    setShowModal(false);
+    onClose();
   };
 
-  return showModal ? (
+  return (
     <div className={styles.overlay}>
       <div className={styles.uploadContainer}>
-        <button onClick={onButtonClick} className={styles.closeButton}>
-          ✖
-        </button>
+        <button onClick={onClose} className={styles.closeButton}>✖</button>
         <h2>Create a Post</h2>
         <div className={styles.postBox}>
           <textarea
             id="postContent"
-            placeholder="What's on your mind, Roni?"
+            placeholder="What's on your mind?"
             value={postContent}
             onChange={(e) => setPostContent(e.target.value)}
           />
@@ -81,6 +67,7 @@ const PostUpload: React.FC = () => {
             ))}
           </div>
         )}
+
         <div className={styles.actionsContainer}>
           <div className={styles.actionsTitle}>Add to your post:</div>
           <div className={styles.actions}>
@@ -94,12 +81,11 @@ const PostUpload: React.FC = () => {
             <span className={styles.actionIcon} data-tooltip="Rate your coffee">☕</span>
           </div>
         </div>
-        <button className={styles.postButton} onClick={handlePost}>
-          Post
-        </button>
+
+        <button className={styles.postButton} onClick={handlePost}>Post</button>
       </div>
     </div>
-  ) : null;
+  );
 };
 
 export default PostUpload;
