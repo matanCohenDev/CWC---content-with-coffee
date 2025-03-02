@@ -5,47 +5,54 @@ import { useNavigate } from "react-router-dom";
 import PostUpload from "../post-upload/uploadPost";
 import SearchComponent from "../SearchComponent/SearchComponent";
 
-export default function BottomBar() {
-    const [isShowPostUpload, setIsShowPostUpload] = useState(false);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const navigate = useNavigate();
+interface BottomBarProps {
+  onPostCreated: () => void;
+}
 
-    const handleClickProfile = () => {
-        navigate("/profile");
-    };
+export default function BottomBar({ onPostCreated }: BottomBarProps) {
+  const [isShowPostUpload, setIsShowPostUpload] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const navigate = useNavigate();
 
-    const handleClickCreatePost = () => {
-        setIsShowPostUpload(true);
-    };
+  const handleClickProfile = () => {
+    navigate("/profile");
+  };
 
-    const handleClosePostUpload = () => {
-        setIsShowPostUpload(false);
-    };
+  const handleClickCreatePost = () => {
+    setIsShowPostUpload(true);
+  };
 
-    const handleClickSearch = () => {
-        setIsSearchOpen(true);
-    };
+  const handleClosePostUpload = () => {
+    setIsShowPostUpload(false);
+  };
 
-    const handleCloseSearch = () => {
-        setIsSearchOpen(false);
-    };
+  const handleClickSearch = () => {
+    setIsSearchOpen(true);
+  };
 
-    return (
-        <div>
-            {isShowPostUpload && <PostUpload onClose={handleClosePostUpload} />}
-            {isSearchOpen && <SearchComponent onClose={handleCloseSearch} />}
-            
-            <div className={bottomBarStyles.container}>
-                <button className={bottomBarStyles.button} onClick={handleClickProfile}>
-                    <User size={24} />
-                </button>
-                <button className={bottomBarStyles.button} onClick={handleClickCreatePost}>
-                    <PlusCircle size={24} />
-                </button>
-                <button className={bottomBarStyles.button} onClick={handleClickSearch}>
-                    <Search size={24} />
-                </button>
-            </div>
-        </div>
-    );
+  const handleCloseSearch = () => {
+    setIsSearchOpen(false);
+  };
+
+  return (
+    <div>
+      {isShowPostUpload && (
+        // Pass the onPostCreated callback to PostUpload
+        <PostUpload onClose={handleClosePostUpload} onPostCreated={onPostCreated} />
+      )}
+      {isSearchOpen && <SearchComponent onClose={handleCloseSearch} />}
+      
+      <div className={bottomBarStyles.container}>
+        <button className={bottomBarStyles.button} onClick={handleClickProfile}>
+          <User size={24} />
+        </button>
+        <button className={bottomBarStyles.button} onClick={handleClickCreatePost}>
+          <PlusCircle size={24} />
+        </button>
+        <button className={bottomBarStyles.button} onClick={handleClickSearch}>
+          <Search size={24} />
+        </button>
+      </div>
+    </div>
+  );
 }

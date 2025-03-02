@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styles from "./uploadPost.module.css";
-import { createPost , uploadImage } from "../../../../services/apiServices";
+import { createPost, uploadImage } from "../../../../services/apiServices";
 
 interface PostUploadProps {
   onClose: () => void;
+  onPostCreated: () => void;
 }
 
-const PostUpload: React.FC<PostUploadProps> = ({ onClose }) => {
+const PostUpload: React.FC<PostUploadProps> = ({ onClose, onPostCreated }) => {
   const [postContent, setPostContent] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -18,22 +19,19 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose }) => {
     };
   }, []);
 
-  // בחירת תמונה (רק אחת)
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
-      const file = event.target.files[0]; // לוקח רק תמונה אחת
+      const file = event.target.files[0];
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
     }
   };
 
-  // הסרת תמונה שנבחרה
   const removeImage = () => {
     setImage(null);
     setImagePreview(null);
   };
 
-  // שליחת הפוסט לשרת
   const handlePost = async () => {
     if (!postContent && !image) {
       alert("You must write something or upload an image.");
@@ -45,15 +43,20 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose }) => {
       if (!response) {
         throw new Error("Failed to upload image");
       }
+      // Assuming response is a string representing imageUrl
+      // Remove the first 15 characters to get the image name
       const imageName = response.substring(15);
       await createPost(postContent, imageName);
+
+      // Trigger the callback to update the feed
+      onPostCreated();
+
       onClose(); 
     } catch (error) {
       console.error("Error uploading post:", error);
       alert("Error uploading post. Please try again.");
     }
   };
-  
 
   return (
     <div className={styles.overlay}>
@@ -70,7 +73,6 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose }) => {
           />
         </div>
 
-        {/* הצגת התמונה הנבחרת */}
         {imagePreview && (
           <div className={styles.imagePreviewContainer}>
             <img src={imagePreview} alt="Preview" className={styles.imagePreview} />

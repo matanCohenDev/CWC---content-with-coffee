@@ -1,27 +1,57 @@
-import React from "react";
 import postCardStyles from "./PostCard.module.css";
 import { Heart, MessageSquare } from "lucide-react";
+import { urlImage , getUsernameById } from "../../../../services/apiServices";
+import { useEffect ,useState } from "react";
 
-export default function PostCard() {
-    return (
-        <div className={postCardStyles.postCard}>
-            {/* Header עם תמונת פרופיל ושם */}
-            <div className={postCardStyles.header}>
-                <div className={postCardStyles.profilePic}></div>
-                <span className={postCardStyles.username}>Username</span>
-            </div>
+interface Post {
+  _id: string;
+  userId: string;
+  content: string;
+  image: string;
+}
 
-            {/* תמונת הפוסט */}
-            <div className={postCardStyles.postImage}></div>
+interface PostCardProps {
+  post: Post;
+}
 
-            {/* טקסט של הפוסט */}
-            <p className={postCardStyles.body}>This is a beautiful cup of coffee!</p>
+export default function PostCard({ post }: PostCardProps) {
 
-            {/* אזור האינטראקציה */}
-            <div className={postCardStyles.actions}>
-                <button className={postCardStyles.button}><Heart size={20} /> Like</button>
-                <button className={postCardStyles.button}><MessageSquare size={20} /> Comment</button>
-            </div>
+  const [username, setUsername] = useState<string>('');
+  useEffect(() => {
+    getUsernameById(post.userId).then((username) => {
+      setUsername(username);
+    });
+  }, [post.userId]);
+
+
+  return (
+    <div className={postCardStyles.postCard}>
+      <div className={postCardStyles.header}>
+        <div className={postCardStyles.profilePic}>
         </div>
-    );
+        <span className={postCardStyles.username}>
+          {username}
+        </span>
+      </div>
+
+      <div className={postCardStyles.postImage}>
+        <img 
+            src={urlImage(post.image)}
+            alt="Post" 
+          className={postCardStyles.image} 
+        />
+      </div>
+
+      <p className={postCardStyles.body}>{post.content}</p>
+
+      <div className={postCardStyles.actions}>
+        <button className={postCardStyles.button}>
+          <Heart size={20} /> Like
+        </button>
+        <button className={postCardStyles.button}>
+          <MessageSquare size={20} /> Comment
+        </button>
+      </div>
+    </div>
+  );
 }

@@ -1,6 +1,5 @@
 import { Request , Response } from "express";
 import User from "../models/user_model";
-import jwt from "jsonwebtoken";
 
 const getUserById = async (req: Request, res: Response): Promise<void>  => {
     try {
@@ -62,6 +61,5 @@ const updateUser = async (req: Request, res: Response): Promise<void>  => {
     }
 }
 
-
-const userController = { getUserById, getUsers, deleteUser, updateUser };
+const userController = { getUserById, getUsers, deleteUser, updateUser }; 
 export default userController;

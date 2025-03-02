@@ -16,4 +16,6 @@ router.post("/logout", authControllers.logout);
 
 router.post("/generateContent", authControllers.chatController)
 
+router.get("/getUserNameById/:id", authControllers.getNameByid);
+
 export default router;

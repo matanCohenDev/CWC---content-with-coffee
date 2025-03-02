@@ -69,6 +69,13 @@
     transform: scale(1.1);
 }
 
+.image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
 @media (max-width: 600px) {
     .postCard {
         padding: 14px;

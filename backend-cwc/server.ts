@@ -78,7 +78,6 @@ app.post("/upload/post", upload.single("image"), (req: Request, res: Response): 
   }
 });
 
-
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 export default app;

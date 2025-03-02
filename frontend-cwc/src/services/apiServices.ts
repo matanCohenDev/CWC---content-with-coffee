@@ -154,6 +154,8 @@ export const getUserIdFromToken = (token: string) => {
     return null;
   }
 };
+
+
 export const generateContent = async (prompt: string) => {
   try {
     const response = await api.post("/api/auth/generateContent", { message: prompt });
@@ -162,6 +164,31 @@ export const generateContent = async (prompt: string) => {
     throw error;
   }
 }
+
+export const getPosts = async () => {
+  try {
+    const response = await api.get("/api/post/getPosts");
+    return response.data.posts;
+  } catch (error) {
+    throw error;
+  }
+}
+
+export const urlImage = (image: string) => {
+  return `${baseURL}/uploads/posts/${image}`;
+}
+
+export const getUsernameById = async (userId: string) => {
+  try {
+    const response = await api.get(`/api/auth/getUserNameById/${userId}`);
+    return response.data.username;
+  } catch (error) {
+    console.error("Error fetching username:", error);
+    throw error;
+  }
+};
+
+
 
 
 

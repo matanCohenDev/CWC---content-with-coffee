@@ -12,7 +12,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 const register = async (req: Request, res: Response) => {
   try {
-    const { email, password, location, bio, favorite_coffee } = req.body;
+    const {name , email, password, location, bio, favorite_coffee } = req.body;
     if (!email || !password) {
       res.status(400).json({ message: "Email and password are required" });
       return;
@@ -26,6 +26,7 @@ const register = async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
+      name,
       email,
       password: hashedPassword,
       location,
@@ -351,6 +352,21 @@ export const authMiddleware = (
   }
 };
 
+const getNameByid = async (req: Request, res: Response) => {
+  try {
+      const user = await User.findById(req.params.id);
+      if (!user) {
+          res.status(404).json({ message: "User not found" });
+          return;
+      }
+      res.status(200).json({ username: user.name });
+      return;
+  } catch (error) {
+          res.status(500).json({ message: "Internal server error" });
+          return;
+      }
+}
+
 const authControllers = {
   register,
   login,
@@ -358,6 +374,7 @@ const authControllers = {
   refresh,
   getUser,
   chatController,
+  getNameByid
 };
 
 export default authControllers;
