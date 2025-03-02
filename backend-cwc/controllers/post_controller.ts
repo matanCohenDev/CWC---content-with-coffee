@@ -3,7 +3,7 @@ import Post from "../models/post_model";
 
 const createPost = async (req: Request, res: Response) => {
     try {
-        const { content, image, tags } = req.body;
+        const { content, image } = req.body;
         const userId = req.user?._id; 
 
         if (!content || !userId) {
@@ -11,7 +11,7 @@ const createPost = async (req: Request, res: Response) => {
             return;
         }
 
-        const post = await Post.create({ userId, content, image, tags });
+        const post = await Post.create({ userId, content, image });
         res.status(201).json({ success: true, data: post });
     } catch (error) {
         console.error(error);

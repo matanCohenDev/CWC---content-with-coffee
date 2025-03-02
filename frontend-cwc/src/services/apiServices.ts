@@ -8,13 +8,12 @@ interface User {
   favorite_coffee?: string;
   location?: string;
 }
+
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 const api = axios.create({
   baseURL,
   withCredentials: true,
 });
-
-
 
 export const loginUser = async (email: string, password: string, setUser: (user: User | null) => void) => {
   try {
@@ -49,6 +48,7 @@ export const registerUser = async (userData: {
     throw error;
   }
 };
+
 export const refreshAccessToken = async () => {
   try {
     const response = await api.post("/api/auth/refresh"); 
@@ -59,6 +59,7 @@ export const refreshAccessToken = async () => {
     return null;
   }
 };
+
 export const fetchUser = async () => {
   try {
     let accessToken = localStorage.getItem("accessToken");
@@ -80,6 +81,75 @@ export const fetchUser = async () => {
     return response.data.user;
   } catch (error) {
     console.error("Failed to fetch user:", error);
+    return null;
+  }
+};
+
+export interface Post {
+  content: string;
+  image: string;
+  userId: string;
+}
+
+export const createPost = async (postContent: string, image: string) => {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      throw new Error("Access token חסר");
+    }
+    const userId = getUserIdFromToken(accessToken);
+    if (!userId) {
+      throw new Error("לא ניתן לחלץ את מזהה המשתמש מה-token");
+    }
+
+    const post: Post = {
+      content: postContent,
+      image: image, 
+      userId,
+    };
+
+    console.log("Post object:", post);
+
+    const response = await api.post("/api/post/createPost", post, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    console.error("Failed to create post:", error);
+    return null;
+  }
+};
+
+export const uploadImage = async (image: File , postContent: string) => {
+  try {
+    const formData = new FormData();
+    formData.append("image", image);
+    formData.append("postContent", postContent);
+
+    const response = await api.post("/upload/post", formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    return response.data.imageUrl;
+  }
+  catch (error) {
+    console.error("Failed to upload image:", error);
+    return null;
+  }
+};
+
+export const getUserIdFromToken = (token: string) => {
+  try {
+    const decoded = JSON.parse(atob(token.split(".")[1]));
+    return decoded._id; 
+  } catch (error) {
+    console.error("Failed to decode token", error);
     return null;
   }
 };
