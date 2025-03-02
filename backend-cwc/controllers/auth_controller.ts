@@ -3,6 +3,12 @@ import User, { UserInterface } from "../models/user_model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 const register = async (req: Request, res: Response) => {
   try {
@@ -206,7 +212,6 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
     ) as jwt.JwtPayload;
 
     if (!decoded || !decoded._id) {
-      // שים לב שצריך _id ולא id
       res.status(401).json({ message: "Invalid token" });
       return;
     }
@@ -219,10 +224,43 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
 
     res.status(200).json(user);
   } catch (error) {
-    console.error("🔥 Error in getUser:", error); // ✅ נוסיף לוג לשגיאה
+    console.error("🔥 Error in getUser:", error); 
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+
+const chatController =  async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userMessage = req.body.message;
+      if (!userMessage) {
+         res.status(400).json({ message: "Message is required" });
+          return;
+      }
+
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const prompt = `אתה צ'אטבוט מומחה לקפה באפליקציית "קפה חכמה". עליך לענות בשפה העברית בצורה תקינה וברורה, בתשובות קצרות וענייניות, וללא שימוש בכוכביות או סימני עיצוב מיוחדים.
+      אם המשתמש שואל שאלה על קפה – ספק תשובה מקצועית ומפורטת. 
+      אם המשתמש מברך אותך (כמו "שלום", "מה שלומך", "היי", "אני צריך עזרה" וכדומה) – הגֵב באופן ידידותי בעברית תקינה, גם אם לא מדובר בקפה. 
+      אם המשתמש מבקש טקסט לפוסטים ברשתות חברתיות או תוכן שיווקי, התאם את התשובה שלך לאופי פוסט מעניין וקולע, תוך הקפדה על סגנון קצר וקצבי, ולא מידע ארוך ומעמיק כמו ערך ויקיפדיה. 
+      אם המשתמש שואל שאלה שאינה קשורה כלל לנושאי קפה ואינה בגדר ברכה או בקשת עזרה – אמור לו בנימוס: "אני כאן בעיקר כדי לדבר על קפה, אבל אשמח לעזור אם יש משהו כללי."
+      
+      כעת ענה על הודעת המשתמש הבאה: ${userMessage}`;
+            const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      console.log("Generated response:", text);
+      console.log("Response", result.response);
+
+      res.status(200).json({ response: text });
+    } catch (error) {
+      console.error("Error generating response:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
 
 const refresh = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -319,6 +357,7 @@ const authControllers = {
   logout,
   refresh,
   getUser,
+  chatController,
 };
 
 export default authControllers;
