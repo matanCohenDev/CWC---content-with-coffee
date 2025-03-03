@@ -18,4 +18,7 @@ router.post("/generateContent", authControllers.chatController)
 
 router.get("/getUserNameById/:id", authControllers.getNameByid);
 
+router.post("/google", authControllers.googleLogin);
+
+
 export default router;

@@ -8,7 +8,7 @@ export default function Header() {
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
-      navigate("/forms"); 
+      navigate("/login"); 
     };
 
     return (

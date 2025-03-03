@@ -1,15 +1,77 @@
 import { Express, Request, Response, NextFunction } from "express";
-import User, { UserInterface } from "../models/user_model";
+import User, { IUser } from "../models/user_model";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Document } from "mongoose";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { OAuth2Client } from 'google-auth-library';
+
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+const googleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void>  => {
+  try {
+    const { token } = req.body; 
+    if (!token) {
+       res.status(400).json({ message: "No token provided" });
+        return;
+    }
+
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+
+    if (!payload || !payload.email) {
+       res.status(401).json({ message: "Invalid Google token" });
+        return;
+    }
+
+    let user = await User.findOne({ email: payload.email });
+    if (!user) {
+      user = await User.create({
+        email: payload.email,
+        name: payload.name, 
+        password: "",
+        isGoogleUser: true,  
+      });
+    }
+
+    const { accessToken, refreshToken } = generateTokens(user._id.toString());
+
+    if (!Array.isArray(user.refreshToken)) {
+      user.refreshToken = [];
+    }
+    user.refreshToken.push(refreshToken);
+    await user.save();
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/api/auth/refresh",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      success: true,
+      accessToken,
+      id: user._id,
+    });
+  } catch (error) {
+    console.error("Error in googleLogin:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 const register = async (req: Request, res: Response) => {
   try {
     const {name , email, password, location, bio, favorite_coffee } = req.body;
@@ -185,19 +247,56 @@ const logout = async (req: Request, res: Response) => {
       sameSite: "strict",
       path: "/api/auth/refresh",
     });
-    const user = await User.findById(req.user?._id);
-    if (!user) {
-      res.status(404).json({ message: "User not found" });
-      return;
+
+    const googleToken = req.body.googleToken;
+    if (googleToken) {
+      try {
+        const revokeResponse = await fetch(
+          `https://oauth2.googleapis.com/revoke?token=${googleToken}`,
+          {
+            method: "POST",
+            headers: { "Content-type": "application/x-www-form-urlencoded" },
+          }
+        );
+        if (!revokeResponse.ok) {
+          console.warn("Google token revoke failed:", revokeResponse.statusText);
+        }
+      } catch (revokeError) {
+        console.error("Error revoking Google token:", revokeError);
+      }
     }
-    user.refreshToken = user.refreshToken?.filter((token) => token !== refreshToken) || [];
-    await user.save();
+
+    let userId = req.user?._id;
+    if (!userId && refreshToken) {
+      try {
+        const payload = jwt.verify(
+          refreshToken,
+          process.env.REFRESH_TOKEN_SECRET!
+        ) as jwt.JwtPayload;
+        userId = payload?._id;
+      } catch (err) {
+        console.error("Error verifying refresh token during logout", err);
+      }
+    }
+
+    if (userId) {
+      const user = await User.findById(userId);
+      if (user) {
+        user.refreshToken = user.refreshToken?.filter(
+          (token: string) => token !== refreshToken
+        ) || [];
+        await user.save();
+      }
+    }
 
     res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
+    console.error("Logout failed", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 const getUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
@@ -243,12 +342,13 @@ const chatController =  async (req: Request, res: Response): Promise<void> => {
 
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const prompt = `אתה צ'אטבוט מומחה לקפה באפליקציית "קפה חכמה". עליך לענות בשפה העברית בצורה תקינה וברורה, בתשובות קצרות וענייניות, וללא שימוש בכוכביות או סימני עיצוב מיוחדים.
-      אם המשתמש שואל שאלה על קפה – ספק תשובה מקצועית ומפורטת. 
-      אם המשתמש מברך אותך (כמו "שלום", "מה שלומך", "היי", "אני צריך עזרה" וכדומה) – הגֵב באופן ידידותי בעברית תקינה, גם אם לא מדובר בקפה. 
-      אם המשתמש מבקש טקסט לפוסטים ברשתות חברתיות או תוכן שיווקי, התאם את התשובה שלך לאופי פוסט מעניין וקולע, תוך הקפדה על סגנון קצר וקצבי, ולא מידע ארוך ומעמיק כמו ערך ויקיפדיה. 
-      אם המשתמש שואל שאלה שאינה קשורה כלל לנושאי קפה ואינה בגדר ברכה או בקשת עזרה – אמור לו בנימוס: "אני כאן בעיקר כדי לדבר על קפה, אבל אשמח לעזור אם יש משהו כללי."
-      
-      כעת ענה על הודעת המשתמש הבאה: ${userMessage}`;
+אם המשתמש שואל שאלה על קפה – ספק תשובה מקצועית ומפורטת. 
+אם המשתמש שואל על מיקום של בתי קפה קרובים או בתי קפה מומלצים, ספק המלצות רלוונטיות (לפי מידע כללי או הערכה כללית) והרחב בהמלצות על סוג הקפה או אווירת המקום, ככל הידוע לך.
+אם המשתמש מברך אותך (כמו "שלום", "מה שלומך", "היי", "אני צריך עזרה" וכדומה) – הגֵב באופן ידידותי בעברית תקינה, גם אם לא מדובר בקפה.
+אם המשתמש מבקש טקסט לפוסטים ברשתות חברתיות או תוכן שיווקי, התאם את התשובה שלך לאופי פוסט מעניין וקולע, תוך הקפדה על סגנון קצר וקצבי, ולא מידע ארוך ומעמיק כמו ערך ויקיפדיה.
+אם המשתמש שואל שאלה שאינה קשורה כלל לנושאי קפה כולל ואינה בגדר ברכה או בקשת עזרה – אמור לו בנימוס: "אני כאן בעיקר כדי לדבר על קפה, אבל אשמח לעזור אם יש משהו כללי."
+
+כעת ענה על הודעת המשתמש הבאה: ${userMessage}`;
             const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
@@ -374,7 +474,8 @@ const authControllers = {
   refresh,
   getUser,
   chatController,
-  getNameByid
+  getNameByid,
+  googleLogin,
 };
 
 export default authControllers;

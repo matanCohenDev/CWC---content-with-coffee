@@ -2,9 +2,11 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './login-page.module.css';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useGoogleLogin } from '@react-oauth/google';
 import { loginUser, fetchUser } from '../../services/apiServices';
 import { useUser } from "../../context/UserContext";
+import {googleLoginUser} from '../../services/apiServices';
+import { GoogleLogin } from '@react-oauth/google';
+
 
 type LoginInputs = {
   email: string;
@@ -14,6 +16,26 @@ type LoginInputs = {
 const LoginForm: React.FC = () => {
   const { setUser } = useUser();
   const navigate = useNavigate();
+  const onSuccess = async (credentialResponse: any) => {
+    try {
+      console.log("credentialResponse:", credentialResponse);
+      const token = credentialResponse.credential;
+      if (!token) {
+        console.error("No token received from Google");
+        return;
+      }
+  
+      await googleLoginUser(token, setUser);
+  
+      navigate("/feed");
+    } catch (error) {
+      console.error("Google login failed:", error);
+    } 
+  };
+
+  const onError = () => {
+    console.log('Login Failed');
+  };
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInputs>();
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
@@ -33,19 +55,8 @@ const LoginForm: React.FC = () => {
     }
   };
 
-  const onGoogleLoginSuccess = async (response: any) => {
-    console.log('Google login success:', response);
-    navigate("/feed");
-  };
-
-  const onGoogleLoginFailure = async () => {
-    console.error('Google login failed');
-  };
-
-  const login = useGoogleLogin({
-    onSuccess: onGoogleLoginSuccess,
-    onError: onGoogleLoginFailure,
-  });
+  
+  
 
   return (
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
@@ -76,9 +87,8 @@ const LoginForm: React.FC = () => {
       </div>
 
       <button type="submit" className={styles.btn}>Login</button>
-      <button type="button" onClick={() => login()} className={styles.btn}>
-        Login with Google
-      </button>
+      <GoogleLogin onSuccess={onSuccess} onError={onError} />
+
     </form>
   );
 };

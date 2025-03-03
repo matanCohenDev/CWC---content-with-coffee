@@ -6,12 +6,16 @@ import Sidebar from "./components/SideBar/SideBar";
 import DecorativeSvgs from "./components/DecorativeSvgs/DecorativeSvgs";
 import { Send } from "lucide-react";
 import logo from "../../assets/pics/landingPage-pics/logo.png";
-import CoffeeSmartChat from "./components/chatbot/chatbot"; 
-import { getPosts } from "../../services/apiServices";
+import CoffeeSmartChat from "./components/chatbot/chatbot";
+import { getPosts ,logoutUser } from "../../services/apiServices";
+import { useNavigate } from "react-router-dom";
+
 
 const Feed: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
+  const navigate = useNavigate();
+
 
   const loadPosts = async () => {
     try {
@@ -26,7 +30,15 @@ const Feed: React.FC = () => {
   useEffect(() => {
     loadPosts();
   }, []);
-
+  const handleLogout = async () => {
+    try {
+      await logoutUser(); 
+      localStorage.removeItem("accessToken");
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   return (
     <div className={styles.feedContainer}>
       <DecorativeSvgs />
@@ -53,6 +65,9 @@ const Feed: React.FC = () => {
       {/* Pass loadPosts as onPostCreated callback */}
       <BottomBar onPostCreated={loadPosts} />
       <CoffeeSmartChat />
+      <button className={styles.logoutButton} onClick={handleLogout}>
+        התנתקות
+      </button>
     </div>
   );
 };

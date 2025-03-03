@@ -50,7 +50,7 @@ const RegisterForm: React.FC = () => {
       <div className={styles.inputBox}>
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Full Name"
           {...register('name')}
         />
         {errors.name && <p className={styles.error}>{errors.name.message}</p>}

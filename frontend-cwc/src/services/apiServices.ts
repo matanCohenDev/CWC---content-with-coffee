@@ -8,14 +8,16 @@ interface User {
   favorite_coffee?: string;
   location?: string;
 }
-
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 const api = axios.create({
   baseURL,
   withCredentials: true,
 });
 
-
+const googleclientid = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+export const getGoogleClientId = () => {
+  return googleclientid;
+};
 export const loginUser = async (email: string, password: string, setUser: (user: User | null) => void) => {
   try {
     const response = await api.post('/api/auth/login', { email, password });
@@ -187,6 +189,37 @@ export const getUsernameById = async (userId: string) => {
     throw error;
   }
 };
+
+export const googleLoginUser = async (
+  token: string,
+  setUser: (user: User | null) => void
+) => {
+  try {
+    const response = await api.post("/api/auth/google", { token });
+
+    localStorage.setItem("accessToken", response.data.accessToken);
+
+    const userData = await fetchUser();
+    if (userData) {
+      setUser(userData);
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error("Error during Google login:", error);
+    throw error;
+  }
+};
+export const logoutUser = async () => {
+  try {
+    await api.post("/api/auth/logout");
+    return true;
+  } catch (error) {
+    console.error("Logout failed", error);
+    return false;
+  }
+};
+
 
 
 
