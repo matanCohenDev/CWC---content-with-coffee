@@ -9,7 +9,7 @@ const getUserById = async (req: Request, res: Response): Promise<void>  => {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        res.status(200).json(user);
+        res.status(200).json({ username: user.name });
         return;
     } catch (error) {
          res.status(500).json({ message: "Internal server error" });
