@@ -292,6 +292,62 @@ export const checkIfUserAlreadyLiked = async (postId: string) => {
   }
 }
 
+export const createComment = async (postId: string, content: string) => {
+  try {
+    const response = await api.post("/api/comment/createComment", { postId, content }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    api.post(`/api/post/commentPost/${postId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    throw error;
+  }
+}
+
+export const removeComment = async (commentId: string, postId: string) => {
+  try {
+    const response = await api.delete(`/api/comment/deleteComment/${commentId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    await api.delete(`/api/post/removeComment/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error removing comment:", error);
+    throw error;
+  }
+}
+
+export const getCommentsByPostId = async (postId: string) => {
+  try {
+    const response = await api.get(`/api/comment/getCommentsByPostId/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    return response.data.comments;
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    throw error;
+  }
+}
 
 
 
