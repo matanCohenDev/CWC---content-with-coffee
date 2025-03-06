@@ -330,8 +330,6 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
 };
 
 
-
-
 const chatController =  async (req: Request, res: Response): Promise<void> => {
     try {
       const userMessage = req.body.message;

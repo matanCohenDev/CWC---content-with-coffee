@@ -19,7 +19,6 @@ const createPost = async (req: Request, res: Response) => {
     }
 };
 
-
 const getPosts = async (req: Request, res: Response) => {
     try {
         const posts = await Post.find();
@@ -113,8 +112,42 @@ const deletePostById = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
+const updateLikeToPost = async (req: Request, res: Response) => {
+    try {
+        const postId = req.params.postId;
+        const post = await Post.findById(postId);
+        if (!post) {
+            res.status(404).json({ success: false, message: "Post not found" });
+            return;
+        }
+        post.likesCount += 1;
+        await post.save();
+        res.status(200).json({ success: true, data: post });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+const removeLikeToPost = async (req: Request, res: Response) => {
+    try {
+        const postId = req.params.postId;
+        const post = await Post.findById(postId);
+        if (!post) {
+            res.status(404).json({ success: false, message: "Post not found" });
+            return;
+        }
+        post.likesCount -= 1;
+        await post.save();
+        res.status(200).json({ success: true, data: post });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
  
-const PostController = { createPost, getPosts, getPostById, getPostByUserId, updatePostById, deletePostById};
+const PostController = { createPost, getPosts, getPostById, getPostByUserId, updatePostById, deletePostById , updateLikeToPost , removeLikeToPost };
 
 export default PostController;
 

@@ -97,13 +97,11 @@
   border: none;
   cursor: pointer;
   padding-top: 10px;
-  color: #6b4226;
+  color: #ffffff;
   border-radius: 20%;
   transition: all 0.2s ease-in-out;
 }
 
 .closeButton:hover {
-  background: rgba(111, 78, 55, 0.3);
-  color: #54351f;
   transform: scale(1.1);
 }

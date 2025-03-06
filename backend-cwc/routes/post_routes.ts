@@ -17,4 +17,8 @@ router.put("/updatePostById/:postId", authMiddleware, PostControllers.updatePost
 
 router.delete("/deletePostById/:postId", authMiddleware, PostControllers.deletePostById);
 
+router.post("/likePost/:postId", authMiddleware, PostControllers.updateLikeToPost);
+
+router.delete("/removeLike/:postId", authMiddleware, PostControllers.removeLikeToPost);
+
 export default router;

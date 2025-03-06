@@ -46,20 +46,20 @@ const deleteLike = async (req: Request, res: Response) => {
     }
 }
 
-const getLikesByPostId = async (req:Request , res:Response) => {
+const getLikesByPostId = async (req: Request, res: Response) => {
     try {
-        const postId = req.params.postId;
-        const likes = await Like.find({postId});
-        if (!likes) {
-            res.status(404).json({ message: "No likes found" });
-            return;
-        }
-        res.status(200).json({ likes , success: true });
+      const postId = req.params.postId;
+      const likes = await Like.find({ postId });
+      if (!likes) {
+        res.status(404).json({ message: "No likes found" });
+        return;
+      }
+      res.status(200).json({ likes, success: true });
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
     }
-}
-
+  }
+  
 
 const LikeControllers = { createLike, getLikes, deleteLike , getLikesByPostId };
 

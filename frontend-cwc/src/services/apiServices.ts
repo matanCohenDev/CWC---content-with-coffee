@@ -167,6 +167,10 @@ export const generateContent = async (prompt: string) => {
   }
 }
 
+export function getAllUsers() {
+  return api.get("/api/user/getUsers");
+}
+
 export const getPosts = async () => {
   try {
     const response = await api.get("/api/post/getPosts");
@@ -210,6 +214,7 @@ export const googleLoginUser = async (
     throw error;
   }
 };
+
 export const logoutUser = async () => {
   try {
     await api.post("/api/auth/logout");
@@ -219,6 +224,78 @@ export const logoutUser = async () => {
     return false;
   }
 };
+
+export const getUserNameDatails = async (userId: string) => {
+  try {
+    const response = await api.get(`/api/user/getUserById/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching username:", error);
+    throw error;
+  }
+}
+
+export const likePost = async (postId: string) => {
+  try {
+    const response = await api.post("/api/like/createLike", { postId }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        _id: getUserIdFromToken(localStorage.getItem("accessToken") || ""),
+      },
+    });
+
+    await api.post(`/api/post/likePost/${postId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error liking post:", error);
+    throw error;
+  }
+}
+
+export const removeLike = async (likeId: string , postId: string) => {
+  try {
+    const response = await api.delete(`/api/like/deleteLike/${likeId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    await api.delete(`/api/post/removeLike/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error removing like:", error);
+    throw error;
+  }
+}
+
+export const checkIfUserAlreadyLiked = async (postId: string) => {
+  try{
+    const response = await api.get(`/api/like/getLikesByPostId/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching likes:", error);
+    throw error;
+  }
+}
+
+
+
+
+ 
 
 
 

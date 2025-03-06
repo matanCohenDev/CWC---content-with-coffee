@@ -4,6 +4,7 @@ import { User, PlusCircle, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PostUpload from "../post-upload/uploadPost";
 import SearchComponent from "../SearchComponent/SearchComponent";
+import { getUserIdFromToken , getUserNameDatails } from "../../../../services/apiServices";
 
 interface BottomBarProps {
   onPostCreated: () => void;
@@ -15,7 +16,14 @@ export default function BottomBar({ onPostCreated }: BottomBarProps) {
   const navigate = useNavigate();
 
   const handleClickProfile = () => {
-    navigate("/profile");
+    const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
+    console.log(userId);
+    getUserNameDatails(userId).then((response) => {
+      console.log(response);
+    });
+    getUserNameDatails(userId).then((response) => {
+      navigate("/profile", { state: { user: response } });
+    });
   };
 
   const handleClickCreatePost = () => {
@@ -37,7 +45,6 @@ export default function BottomBar({ onPostCreated }: BottomBarProps) {
   return (
     <div>
       {isShowPostUpload && (
-        // Pass the onPostCreated callback to PostUpload
         <PostUpload onClose={handleClosePostUpload} onPostCreated={onPostCreated} />
       )}
       {isSearchOpen && <SearchComponent onClose={handleCloseSearch} />}

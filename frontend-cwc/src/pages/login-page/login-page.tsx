@@ -48,7 +48,6 @@ const LoginForm: React.FC = () => {
         setUser(user);
       }
 
-      console.log("Login success:", result);
       navigate("/feed"); 
     } catch (error) {
       console.error("Error during login:", error);

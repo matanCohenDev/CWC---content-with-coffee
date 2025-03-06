@@ -21,7 +21,6 @@ const Feed: React.FC = () => {
     try {
       const postsArray = await getPosts();
       setPosts(postsArray);
-      console.log("Posts:", postsArray);
     } catch (error) {
       console.error("Failed to load posts:", error);
     }

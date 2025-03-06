@@ -1,34 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./SearchComponent.module.css";
 import { X } from "lucide-react";
+import { getAllUsers , getUserIdFromToken } from "../../../../services/apiServices";
 
-const users = [
-  "Alice Johnson",
-  "Bob Smith",
-  "Charlie Brown",
-  "David Miller",
-  "Emma Wilson",
-  "Franklin Carter",
-  "Grace Davis",
-  "Hannah White",
-];
+interface User {
+  _id: string;
+  name: string;
+}
 
 interface SearchComponentProps {
   onClose: () => void;
 }
 
 const SearchComponent: React.FC<SearchComponentProps> = ({ onClose }) => {
+  const [users, setUsers] = useState<User[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredUsers, setFilteredUsers] = useState(users);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getAllUsers()
+      .then(response => {
+        setUsers(response.data);
+        setFilteredUsers(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching users:", error);
+      });
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const query = event.target.value.toLowerCase();
+    const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
     setSearchQuery(query);
 
     const filtered = users.filter((user) =>
-      user.toLowerCase().includes(query)
+      user.name.toLowerCase().includes(query) && user._id !== userId
     );
     setFilteredUsers(filtered);
+  };
+
+  const onHandleClickUser = (user: User) => () => {
+    navigate("/userprofile", { state: { user } });
   };
 
   return (
@@ -47,9 +61,13 @@ const SearchComponent: React.FC<SearchComponentProps> = ({ onClose }) => {
         {searchQuery && (
           <ul className={styles.userList}>
             {filteredUsers.length > 0 ? (
-              filteredUsers.map((user, index) => (
-                <li key={index} className={styles.userItem}>
-                  {user}
+              filteredUsers.map((user) => (
+                <li
+                  key={user._id}
+                  className={styles.userItem}
+                  onClick={onHandleClickUser(user)}
+                >
+                  {user.name}
                 </li>
               ))
             ) : (

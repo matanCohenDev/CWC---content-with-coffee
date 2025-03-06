@@ -9,7 +9,7 @@ const getUserById = async (req: Request, res: Response): Promise<void>  => {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        res.status(200).json({ username: user.name });
+        res.status(200).json({_id : user._id, username: user.name , email: user.email , bio: user.bio , favorite_coffee: user.favorite_coffee , location: user.location  });  
         return;
     } catch (error) {
          res.status(500).json({ message: "Internal server error" });
@@ -60,6 +60,7 @@ const updateUser = async (req: Request, res: Response): Promise<void>  => {
         return;
     }
 }
+
 
 const userController = { getUserById, getUsers, deleteUser, updateUser }; 
 export default userController;
