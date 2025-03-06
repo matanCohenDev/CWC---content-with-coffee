@@ -1,6 +1,14 @@
 import postCardStyles from "./PostCard.module.css";
+import Comments from "../Comments/Comments"; // Adjust the path as needed
 import { Heart, MessageSquare } from "lucide-react";
-import { urlImage, getUsernameById, likePost, removeLike, checkIfUserAlreadyLiked, getUserIdFromToken } from "../../../../services/apiServices";
+import { 
+  urlImage, 
+  getUsernameById, 
+  likePost, 
+  removeLike, 
+  checkIfUserAlreadyLiked, 
+  getUserIdFromToken 
+} from "../../../../services/apiServices";
 import { useEffect, useState } from "react";
 
 interface Post {
@@ -19,13 +27,17 @@ export default function PostCard({ post }: PostCardProps) {
   const [username, setUsername] = useState<string>('');
   const [liked, setLiked] = useState<boolean>(false);
   const [likeId, setLikeId] = useState<string>('');
+  const [showComments, setShowComments] = useState<boolean>(false);
   const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
 
+  // Check if the user already liked this post
   useEffect(() => {
     const checkIfUserLiked = async () => {
       try {
         const response = await checkIfUserAlreadyLiked(post._id);
-        const likesData = response.likes; 
+        // Adjust based on your API response structure.
+        // If your API returns { likes: [...] , success: true } then use:
+        const likesData = response.likes;
         if (Array.isArray(likesData)) {
           likesData.forEach((like: any) => {
             if (like.userId === userId) {
@@ -34,7 +46,7 @@ export default function PostCard({ post }: PostCardProps) {
             }
           });
         } else {
-          console.warn("Expected an array but got:", likesData);
+          console.warn("Expected an array for likes but got:", likesData);
         }
       } catch (error) {
         console.error("Error in checkIfUserLiked:", error);
@@ -43,6 +55,7 @@ export default function PostCard({ post }: PostCardProps) {
     checkIfUserLiked();
   }, [post._id, userId]);
   
+  // Get post owner's username
   useEffect(() => {
     getUsernameById(post.userId).then((username) => {
       setUsername(username);
@@ -65,32 +78,41 @@ export default function PostCard({ post }: PostCardProps) {
   };
 
   return (
-    <div className={postCardStyles.postCard}>
-      <div className={postCardStyles.header}>
-        <div className={postCardStyles.profilePic}></div>
-        <span className={postCardStyles.username}>{username}</span>
-      </div>
+    <>
+      <div className={postCardStyles.postCard}>
+        <div className={postCardStyles.header}>
+          <div className={postCardStyles.profilePic}></div>
+          <span className={postCardStyles.username}>{username}</span>
+        </div>
 
-      <div className={postCardStyles.postImage}>
-        <img 
-          src={urlImage(post.image)}
-          alt="Post" 
-          className={postCardStyles.image} 
-        />
-      </div>
+        <div className={postCardStyles.postImage}>
+          <img 
+            src={urlImage(post.image)}
+            alt="Post" 
+            className={postCardStyles.image} 
+          />
+        </div>
 
-      <p className={postCardStyles.body}>{post.content}</p>
+        <p className={postCardStyles.body}>{post.content}</p>
 
-      <div className={postCardStyles.actions}>
-        <button 
-          className={postCardStyles.button} 
-          onClick={liked ? onhandleClickRemoveLike : onhandleClickLike}>
-          <Heart size={20} color={liked ? "red" : "black"} /> {post.likesCount} Like
-        </button>
-        <button className={postCardStyles.button}>
-          <MessageSquare size={20} /> Comment
-        </button>
+        <div className={postCardStyles.actions}>
+          <button 
+            className={postCardStyles.button} 
+            onClick={liked ? onhandleClickRemoveLike : onhandleClickLike}>
+            <Heart size={20} color={liked ? "red" : "black"} /> {post.likesCount} Like
+          </button>
+          <button 
+            className={postCardStyles.button} 
+            onClick={() => setShowComments(true)}>
+            <MessageSquare size={20} /> Comment
+          </button>
+        </div>
       </div>
-    </div>
+      
+      {/* Render the Comments modal when showComments is true */}
+      {showComments && (
+        <Comments postId={post._id} onClose={() => setShowComments(false)} />
+      )}
+    </>
   );
 }

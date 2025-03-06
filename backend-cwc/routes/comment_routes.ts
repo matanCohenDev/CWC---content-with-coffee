@@ -11,7 +11,7 @@ router.get("/getComments", CommentControllers.getComments);
 
 router.get("/getCommentById/:commentId", CommentControllers.getCommentById);
 
-router.get("/getCommentByPostId/:postId", authMiddleware, CommentControllers.getCommentsByPostId);
+router.get("/getCommentsByPostId/:postId", authMiddleware, CommentControllers.getCommentsByPostId);
 
 router.put("/updateComment/:commentId", authMiddleware, CommentControllers.updateComment);
 

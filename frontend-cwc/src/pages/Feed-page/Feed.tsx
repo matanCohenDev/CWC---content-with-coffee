@@ -56,12 +56,12 @@ const Feed: React.FC = () => {
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <div className={styles.postsContainer}>
-        {posts.map((post) => (
-          <PostCard key={post._id} post={post} />
-        ))}
+      {posts.slice().reverse().map((post) => (
+        <PostCard key={post._id} post={post} />
+      ))}
+
       </div>
 
-      {/* Pass loadPosts as onPostCreated callback */}
       <BottomBar onPostCreated={loadPosts} />
       <CoffeeSmartChat />
       <button className={styles.logoutButton} onClick={handleLogout}>
