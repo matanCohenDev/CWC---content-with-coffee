@@ -6,7 +6,7 @@ import {
   createComment, 
   removeComment, 
   getUserNameDatails 
-} from "../../../../services/apiServices";
+} from "../../../../../services/apiServices";
 
 interface Comment {
   _id: string;

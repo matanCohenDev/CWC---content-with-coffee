@@ -1,5 +1,5 @@
 import postCardStyles from "./PostCard.module.css";
-import Comments from "../Comments/Comments"; // Adjust the path as needed
+import Comments from "./Comments/Comments"; // Adjust the path as needed
 import { Heart, MessageSquare } from "lucide-react";
 import { 
   urlImage, 
@@ -30,13 +30,10 @@ export default function PostCard({ post }: PostCardProps) {
   const [showComments, setShowComments] = useState<boolean>(false);
   const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
 
-  // Check if the user already liked this post
   useEffect(() => {
     const checkIfUserLiked = async () => {
       try {
         const response = await checkIfUserAlreadyLiked(post._id);
-        // Adjust based on your API response structure.
-        // If your API returns { likes: [...] , success: true } then use:
         const likesData = response.likes;
         if (Array.isArray(likesData)) {
           likesData.forEach((like: any) => {
@@ -55,7 +52,6 @@ export default function PostCard({ post }: PostCardProps) {
     checkIfUserLiked();
   }, [post._id, userId]);
   
-  // Get post owner's username
   useEffect(() => {
     getUsernameById(post.userId).then((username) => {
       setUsername(username);
@@ -109,7 +105,6 @@ export default function PostCard({ post }: PostCardProps) {
         </div>
       </div>
       
-      {/* Render the Comments modal when showComments is true */}
       {showComments && (
         <Comments postId={post._id} onClose={() => setShowComments(false)} />
       )}

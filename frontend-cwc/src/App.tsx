@@ -3,7 +3,7 @@ import LandingPage from "./pages/landing-page/landing-page";
 import FormsPage from "./pages/Forms-page/FormsPage";
 import { UserProvider } from "./context/UserContext";
 import Feed from "./pages/Feed-page/Feed";
-import Profile from "./pages/Profile/profile";
+import Profile from "./pages/Profile/Profile";
 import UserProfile from "./pages/User-profile/UserProfile";
 
 function App() {
