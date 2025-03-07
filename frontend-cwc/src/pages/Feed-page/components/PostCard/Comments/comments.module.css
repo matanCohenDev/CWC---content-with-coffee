@@ -88,6 +88,24 @@
   overflow-y: auto;
 }
 
+.commentList::-webkit-scrollbar {
+  width: 8px;
+}
+
+.commentList::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.commentList::-webkit-scrollbar-thumb {
+  background: #6b4226;
+  border-radius: 10px;
+}
+
+.commentList::-webkit-scrollbar-thumb:hover {
+  background: #54351f;
+}
+
 .commentItem {
   padding: 12px 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);

@@ -44,37 +44,46 @@ const getAllUserMessages = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 }
-const getMessagesBetweenUsers = async (req: Request, res: Response) => {
+
+const getMessagesBetweenUsers = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { senderId, receiverId } = req.query;
-
-        if (!senderId || !receiverId) {
-            res.status(400).json({ success: false, message: "SenderId and receiverId are required" });
-            return;
-        }
-        if (!mongoose.Types.ObjectId.isValid(senderId as string) || !mongoose.Types.ObjectId.isValid(receiverId as string)) {
-            res.status(400).json({ success: false, message: "Invalid senderId or receiverId" });
-            return;
-        }
-
-        const messages = await Message.find({
-            $or: [
-                { senderId, receiverId },
-                { senderId: receiverId, receiverId: senderId },
-            ],
-        }).sort({ createdAt: 1 });
-
-        if (!messages || messages.length === 0) {
-            res.status(404).json({ success: false, message: "No messages found between users" });
-            return;
-        }
-
-        res.status(200).json({ success: true, data: messages });
+      let { senderId, receiverId } = req.query;
+  
+      // המרת הפרמטרים למחרוזת במידה והם מערכים
+      senderId = Array.isArray(senderId) ? senderId[0] : senderId;
+      receiverId = Array.isArray(receiverId) ? receiverId[0] : receiverId;
+  
+      if (!senderId || !receiverId) {
+        res.status(400).json({ success: false, message: "SenderId and receiverId are required" });
+        return;
+      }
+      
+      if (
+        !mongoose.Types.ObjectId.isValid(senderId as string) ||
+        !mongoose.Types.ObjectId.isValid(receiverId as string)
+      ) {
+        res.status(400).json({ success: false, message: "Invalid senderId or receiverId" });
+        return;
+      }
+  
+      const messages = await Message.find({
+        $or: [
+          { senderId, receiverId },
+          { senderId: receiverId, receiverId: senderId },
+        ],
+      }).sort({ createdAt: 1 });
+  
+      if (!messages || messages.length === 0) {
+        res.status(404).json({ success: false, message: "No messages found between users" });
+        return;
+      }
+  
+      res.status(200).json({ success: true, data: messages });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: "Internal server error" });
+      console.error(error);
+      res.status(500).json({ success: false, message: "Internal server error" });
     }
-}
+  };
 const messageRead = async (req: Request, res: Response) => {
     try {
         const { messageId } = req.body;

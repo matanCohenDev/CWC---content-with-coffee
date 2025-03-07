@@ -1,0 +1,119 @@
+.chatContainer {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    height: 600px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 10000;
+  }
+  
+  .header {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+  }
+  
+  .header h2 {
+    color: #ffffff;
+    font-size: 24px;
+    margin: 0;
+  }
+  
+  .messageContainer {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .message {
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    color: #ffffff;
+    max-width: 80%;
+    align-self: flex-start;
+  }
+  
+  .noMessages {
+    color: #ffffff;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .inputContainer {
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .inputField {
+    flex: 1;
+    padding: 10px 15px;
+    border: 2px solid #6b4226;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(5px);
+    transition: border-color 0.3s ease-in-out;
+    color: #ffffff;
+  }
+  
+  .inputField:focus {
+    border-color: #54351f;
+  }
+  
+  .sendButton {
+    padding: 10px 15px;
+    background: #6b4226;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+    color: #ffffff;
+  }
+  
+  .sendButton:hover {
+    background: #54351f;
+  }
+
+  .closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ffffff;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .closeButton:hover {
+    transform: scale(1.1);
+  }
+
+  .sent {
+    background: rgba(111, 78, 55, 0.6);
+    align-self: flex-end;
+  }
+
+  .received {
+    background: rgba(255, 255, 255, 0.2);
+    align-self: flex-start;
+  }
+    
+    

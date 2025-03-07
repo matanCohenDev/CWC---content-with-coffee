@@ -1,7 +1,7 @@
 import { Express, Request, Response, NextFunction } from "express";
 import User, { IUser } from "../models/user_model";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import { Document } from "mongoose";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { OAuth2Client } from 'google-auth-library';
@@ -115,21 +115,28 @@ const generateTokens = (userId: string): tokens => {
   if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
     throw new Error("Token secrets not found");
   }
+  const accessExpires = Number(process.env.ACCESS_TOKEN_EXPIRES) || 86400; 
+  const refreshExpires = Number(process.env.REFRESH_TOKEN_EXPIRES) || 604800; 
+  
   const random = Math.random().toString();
+
+  const optionsAccess: SignOptions = { expiresIn: accessExpires };
   const accessToken = jwt.sign(
     { _id: userId, random },
     process.env.ACCESS_TOKEN_SECRET!,
-    { expiresIn: process.env.ACCESS_TOKEN_EXPIRES }
+    optionsAccess
   );
 
+  const optionsRefresh: SignOptions = { expiresIn: refreshExpires };
   const refreshToken = jwt.sign(
     { _id: userId, random },
     process.env.REFRESH_TOKEN_SECRET!,
-    { expiresIn: process.env.REFRESH_TOKEN_EXPIRES }
+    optionsRefresh
   );
 
   return { accessToken, refreshToken };
 };
+
 
 const login = async (req: Request, res: Response) => {
   try {

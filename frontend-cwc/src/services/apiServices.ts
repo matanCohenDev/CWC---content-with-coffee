@@ -349,6 +349,37 @@ export const getCommentsByPostId = async (postId: string) => {
   }
 }
 
+export const SendMessage = async (senderId: string, receiverId: string, content: string) => {
+  try {
+    const response = await api.post("/api/messages/SendMessage", { senderId, receiverId, content }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data;
+  }
+  catch (error) {
+    console.error("Error sending message:", error);
+    throw error;
+  }
+}
+
+export const getMessagesBetweenUsers = async (senderId: string, receiverId: string) => {
+  try {
+    const response = await api.get("/api/messages/GetMessagesBetweenUsers", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+      params: { senderId, receiverId },
+    });
+    return response.data.data; 
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    throw error;
+  }
+};
+
+
 
 
  
