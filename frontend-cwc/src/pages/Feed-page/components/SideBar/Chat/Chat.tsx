@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./chat.module.css";
 import { Send, X } from "lucide-react";
-import { SendMessage, getUserIdFromToken, getMessagesBetweenUsers } from "../../../../../services/apiServices";
+import io, { type Socket } from "socket.io-client";
+import { getUserIdFromToken, getMessagesBetweenUsers } from "../../../../../services/apiServices";
 
 export interface Message {
   _id: string;
@@ -12,8 +13,8 @@ export interface Message {
 }
 
 interface ChatProps {
-  _id: string;  // chat partner's user id
-  name: string; // chat partner's name
+  _id: string;
+  name: string;
   onclose: () => void;
 }
 
@@ -22,6 +23,7 @@ export default function Chat(props: ChatProps) {
   const [input, setInput] = useState("");
   const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
   const messageContainerRef = useRef<HTMLDivElement>(null);
+  const socketRef = useRef<typeof Socket | null>(null);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -33,25 +35,36 @@ export default function Chat(props: ChatProps) {
       }
     };
     fetchMessages();
+    socketRef.current = io("http://localhost:3000");
+    socketRef.current.on("message", (data: Message) => {
+      setMessages(prev => [...prev, data]);
+    });
+    socketRef.current.on("connect", () => {
+      console.log("Socket connected:", socketRef.current?.id);
+    });
+    socketRef.current.on("disconnect", () => {
+      console.log("Socket disconnected");
+    });
+    return () => {
+      socketRef.current?.disconnect();
+    };
   }, [userId, props._id]);
 
-  // Scroll to the bottom whenever the messages change
   useEffect(() => {
     if (messageContainerRef.current) {
       messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
-  const handleSend = async () => {
-    if (input.trim()) {
-      try {
-        const response = await SendMessage(userId, props._id, input);
-        const newMsg: Message = response.data;
-        setMessages((prev) => [...prev, newMsg]);
-        setInput("");
-      } catch (error) {
-        console.error("Error sending message:", error);
-      }
+  const handleSend = () => {
+    if (input.trim() && socketRef.current) {
+      const messageData = {
+        senderId: userId,
+        receiverId: props._id,
+        content: input,
+      };
+      socketRef.current.emit("sendMessage", messageData);
+      setInput("");
     }
   };
 
@@ -65,13 +78,8 @@ export default function Chat(props: ChatProps) {
       </div>
       <div className={styles.messageContainer} ref={messageContainerRef}>
         {messages.length > 0 ? (
-          messages.map((msg) => (
-            <div
-              key={msg._id}
-              className={`${styles.message} ${
-                msg.senderId === userId ? styles.sent : styles.received
-              }`}
-            >
+          messages.map(msg => (
+            <div key={msg._id} className={`${styles.message} ${msg.senderId === userId ? styles.sent : styles.received}`}>
               {msg.content}
             </div>
           ))
@@ -80,13 +88,7 @@ export default function Chat(props: ChatProps) {
         )}
       </div>
       <div className={styles.inputContainer}>
-        <input
-          type="text"
-          placeholder="Type your message..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className={styles.inputField}
-        />
+        <input type="text" placeholder="Type your message..." value={input} onChange={e => setInput(e.target.value)} className={styles.inputField} />
         <button onClick={handleSend} className={styles.sendButton}>
           <Send size={20} />
         </button>
