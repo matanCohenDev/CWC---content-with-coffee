@@ -59,7 +59,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           ))}
         </ul>
       </div>
-      {showChat && chatUserId && chatUserName && <Chat name={chatUserName} _id={chatUserId} onclose={() => setShowChat(false)}/>}
+      {showChat && chatUserId && chatUserName && !isOpen && <Chat name={chatUserName} _id={chatUserId} onclose={() => setShowChat(false)}/>}
+        
     </div>
   );
 };

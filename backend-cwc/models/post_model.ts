@@ -39,10 +39,6 @@ const postSchema = new mongoose.Schema({
     commentsCount:{
         type: Number,
         default: 0,
-    },
-    Comments:{
-        type: Array,
-        default: [],
     }
 });
 

@@ -17,6 +17,7 @@ interface Post {
   content: string;
   image: string;
   likesCount: number;
+  commentsCount: number;
 }
 
 interface PostCardProps {
@@ -95,12 +96,12 @@ export default function PostCard({ post }: PostCardProps) {
           <button 
             className={postCardStyles.button} 
             onClick={liked ? onhandleClickRemoveLike : onhandleClickLike}>
-            <Heart size={20} color={liked ? "red" : "black"} /> {post.likesCount} Like
+            <Heart size={20} color={liked ? "red" : "black"} /> {post.likesCount} 
           </button>
           <button 
             className={postCardStyles.button} 
             onClick={() => setShowComments(true)}>
-            <MessageSquare size={20} /> Comment
+            <MessageSquare size={20} />{post.commentsCount} 
           </button>
         </div>
       </div>
