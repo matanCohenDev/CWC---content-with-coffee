@@ -1,6 +1,6 @@
 import styles from "./user-profile.module.css";
 import { useLocation } from "react-router-dom";
-import { getAllPostsByUserId, followUser , getAllFollowingByUserId , getUserIdFromToken , unfollowUser } from "../../services/apiServices";
+import { getAllPostsByUserId, followUser , getAllFollowingByUserId , getUserIdFromToken , unfollowUser, urlProfilePic } from "../../services/apiServices";
 import PostCard from "../Feed-page/components/PostCard/PostCard";
 import { useState , useEffect} from "react";
 
@@ -14,6 +14,7 @@ interface User {
   followers_count?: number;
   following_count?: number;
   posts_count?: number;
+  profile_pic: string;
 }
 
 interface Post {
@@ -83,7 +84,7 @@ export default function UserProfile(){
     <div className={styles.profileContainer}>
       <div className={styles.profileHeader}>
         <img
-          src="https://via.placeholder.com/100"
+          src={urlProfilePic(user?.profile_pic)}
           alt="Profile"
           className={styles.profilePic}
         />

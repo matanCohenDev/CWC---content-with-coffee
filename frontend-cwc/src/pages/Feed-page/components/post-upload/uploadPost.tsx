@@ -22,6 +22,7 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose, onPostCreated }) => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
+      console.log("Selected file:", file);
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
     }
@@ -39,15 +40,17 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose, onPostCreated }) => {
     }
 
     try {
-      const response = await uploadImage(image as File, postContent);
-      if (!response) {
-        throw new Error("Failed to upload image");
+      let imageName = "";
+      if (image) {
+        const formData = new FormData();
+        formData.append("image", image);
+        // קריאה ל-uploadImage עם FormData, שמחזירה את הנתיב המלא (למשל "uploads/posts/filename.png")
+        const response = await uploadImage(formData);
+        // לדוגמה, נניח שאנחנו רוצים להסיר את 15 התווים הראשונים מהנתיב
+        imageName = response.substring(15);
       }
-      const imageName = response.substring(15);
       await createPost(postContent, imageName);
-
       onPostCreated();
-
       onClose(); 
     } catch (error) {
       console.error("Error uploading post:", error);
@@ -60,7 +63,6 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose, onPostCreated }) => {
       <div className={styles.uploadContainer}>
         <button onClick={onClose} className={styles.closeButton}>✖</button>
         <h2>Create a Post</h2>
-
         <div className={styles.postBox}>
           <textarea
             id="postContent"
@@ -69,14 +71,12 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose, onPostCreated }) => {
             onChange={(e) => setPostContent(e.target.value)}
           />
         </div>
-
         {imagePreview && (
           <div className={styles.imagePreviewContainer}>
             <img src={imagePreview} alt="Preview" className={styles.imagePreview} />
             <button onClick={removeImage} className={styles.removeImage}>✖</button>
           </div>
         )}
-
         <div className={styles.actionsContainer}>
           <div className={styles.actionsTitle}>Add an image to your post:</div>
           <div className={styles.actions}>
@@ -86,7 +86,6 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose, onPostCreated }) => {
             </label>
           </div>
         </div>
-
         <button className={styles.postButton} onClick={handlePost}>Post</button>
       </div>
     </div>
