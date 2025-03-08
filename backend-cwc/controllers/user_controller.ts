@@ -9,9 +9,10 @@ const getUserById = async (req: Request, res: Response): Promise<void>  => {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        res.status(200).json({_id : user._id, username: user.name , email: user.email ,
+        res.status(200).json({_id : user._id, name: user.name , email: user.email ,
             bio: user.bio , favorite_coffee: user.favorite_coffee , location: user.location, 
-            followers_count: user.followers_count , following_count: user.following_count , posts_count: user.posts_count
+            followers_count: user.followers_count , following_count: user.following_count , posts_count: user.posts_count , 
+            profile_pic: user.profile_pic
           });  
         return;
     } catch (error) {

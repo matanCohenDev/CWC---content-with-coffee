@@ -1,0 +1,120 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(245, 230, 208, 0.1);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .popupContainer {
+    position: relative;
+    background: #fff;
+    padding: 20px;
+    width: 400px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    font-family: "Poppins", sans-serif;
+    color: #4a2c20;
+  }
+  
+  .closeButton {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #6b4226;
+  }
+  
+  .closeButton:hover {
+    color: #54351f;
+  }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #6b4226;
+  }
+  
+  /* אזור תמונת הפרופיל */
+  .profilePicContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .profilePic {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .uploadLabel {
+    background-color: #6b4226;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s;
+  }
+  
+  .uploadLabel:hover {
+    background-color: #54351f;
+  }
+  
+  /* אזור הטופס */
+  .formGroup {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .formGroup label {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #6b4226;
+  }
+  
+  .formGroup input,
+  .formGroup textarea {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    font-family: inherit;
+  }
+  
+  .formGroup textarea {
+    resize: none;
+    height: 60px;
+  }
+  
+  /* כפתור שמירה */
+  .saveButton {
+    background: #6b4226;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+  
+  .saveButton:hover {
+    background: #54351f;
+  }
+  

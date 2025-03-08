@@ -147,6 +147,24 @@ export const uploadImage = async (image: File , postContent: string) => {
   }
 };
 
+export const uploadProfilePic = async (image: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const response = await api.post("/upload/profile", formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+
+    return response.data.imageUrl;
+  } catch (error) {
+    console.error("Failed to upload profile picture:", error);
+    return null;
+  }
+};
+
 export const getUserIdFromToken = (token: string) => {
   try {
     const decoded = JSON.parse(atob(token.split(".")[1]));
@@ -182,6 +200,10 @@ export const getPosts = async () => {
 
 export const urlImage = (image: string) => {
   return `${baseURL}/uploads/posts/${image}`;
+}
+
+export const urlProfilePic = (image: string) => {
+  return `${baseURL}/uploads/profile-pics/${image}`;
 }
 
 export const getUsernameById = async (userId: string) => {

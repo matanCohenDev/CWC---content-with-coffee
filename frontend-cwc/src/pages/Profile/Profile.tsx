@@ -1,8 +1,9 @@
 import styles from "./profile.module.css";
 import { useLocation } from "react-router-dom";
-import { getAllPostsByUserId } from "../../services/apiServices";
+import { getAllPostsByUserId, urlProfilePic } from "../../services/apiServices";
 import PostCard from "../Feed-page/components/PostCard/PostCard";
-import { useState , useEffect} from "react";
+import { useState, useEffect } from "react";
+import EditPopup from "../../components/Edit-popup"; // ודא שהנתיב נכון
 
 interface User {
   _id: string;
@@ -11,6 +12,7 @@ interface User {
   location: string;
   bio: string;
   favorite_coffee: string;
+  profile_pic: string;
   followers_count?: number;
   following_count?: number;
   posts_count?: number;
@@ -25,27 +27,54 @@ interface Post {
   commentsCount: number;
 }
 
-export default function Profile(){  
+export default function Profile() {
   const location = useLocation();
   const { user } = location.state as { user: User };
   const [posts, setPosts] = useState<Post[]>([]);
+  const [showEditPopup, setShowEditPopup] = useState(false);
 
   useEffect(() => {
-    getAllPostsByUserId(user._id).then((data) => {
-      setPosts(data.posts);
-    });
+    getAllPostsByUserId(user._id)
+      .then((data) => {
+        if (data.posts) {
+          setPosts(data.posts);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching posts:", error);
+      });
   }, [user._id]);
-  
 
+  const handleOpenEditPopup = () => {
+    setShowEditPopup(true);
+  };
+
+  const handleCloseEditPopup = () => {
+    setShowEditPopup(false);
+  };
+
+  const handleSaveProfile = (updatedData: {
+    name: string;
+    email: string;
+    location: string;
+    bio: string;
+    favoriteCoffee: string;
+    profilePicture: File | null;
+  }) => {
+    console.log("Updated profile data:", updatedData);
+    setShowEditPopup(false);
+  };
 
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profileHeader}>
-        <img
-          src="https://via.placeholder.com/100"
-          alt="Profile"
-          className={styles.profilePic}
-        />
+        <div className={styles.profilePicContainer} onClick={() => console.log("Open upload image modal")}>
+          <img
+            src={urlProfilePic(user?.profile_pic)}
+            alt="Profile"
+            className={styles.profilePic}
+          />
+        </div>
         <div className={styles.rightSection}>
           <h2 className={styles.profileName}>{user?.name}</h2>
           <div className={styles.statsRow}>
@@ -62,7 +91,9 @@ export default function Profile(){
               <span className={styles.statLabel}>Posts</span>
             </div>
           </div>
-          <button className={styles.editButton}>Edit Profile</button>
+          <button className={styles.editButton} onClick={handleOpenEditPopup}>
+            Edit Profile
+          </button>
         </div>
       </div>
 
@@ -82,10 +113,27 @@ export default function Profile(){
       </div>
 
       <div className={styles.postsContainer}>
-      {Array.isArray(posts) ? posts.map((post) => (
-          <PostCard key={post._id} post={post} variant="large" />
-      )) : <p>No posts available</p>}
+        {Array.isArray(posts) ? (
+          posts.map((post) => <PostCard key={post._id} post={post} variant="large" />)
+        ) : (
+          <p>No posts available</p>
+        )}
       </div>
+
+      {showEditPopup && (
+        <EditPopup
+          onClose={handleCloseEditPopup}
+          onSave={handleSaveProfile}
+          initialData={{
+            name: user.name,
+            email: user.email,
+            location: user.location,
+            bio: user.bio,
+            favoriteCoffee: user.favorite_coffee,
+            profilePictureUrl: urlProfilePic(user.profile_pic),
+          }}
+        />
+      )}
     </div>
   );
-};
+}

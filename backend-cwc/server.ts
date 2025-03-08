@@ -48,6 +48,8 @@ app.use('/api/messages', MessagesRoutes);
 app.use('/api/user', UserRoutes);
 app.use('/api/follow', FollowRoutes);
 
+path.join(__dirname, "public");
+
 const uploadDir = path.join(__dirname , "uploads/posts");
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
