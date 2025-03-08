@@ -88,7 +88,29 @@ const unfollow = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-const followController = { follow, unfollow };
+const getAllFollowersByUserId = async (req: Request, res: Response): Promise<void> => {
+    const { userId } = req.params;
+    try {
+        const followers = await Follow.find({ following: userId });
+        res.status(200).json(followers);
+    } catch (error) {
+        res.status(500).json({ message: (error as Error).message });
+        return;
+    }
+};
+
+const getAllFollowingByUserId = async (req: Request, res: Response): Promise<void> => {
+    const { userId } = req.params;
+    try {
+        const following = await Follow.find({ follower: userId });
+        res.status(200).json(following);
+    } catch (error) {
+        res.status(500).json({ message: (error as Error).message });
+        return;
+    }
+};
+
+const followController = { follow, unfollow , getAllFollowersByUserId, getAllFollowingByUserId };
 export { followController };
 
 

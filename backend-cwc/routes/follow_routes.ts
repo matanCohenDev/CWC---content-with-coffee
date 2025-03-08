@@ -8,4 +8,8 @@ router.post('/follow', authMiddleware, followController.follow);
 
 router.post('/unfollow', authMiddleware, followController.unfollow);
 
+router.get('/followers/:userId', followController.getAllFollowersByUserId);
+
+router.get('/following/:userId', followController.getAllFollowingByUserId);
+
 export default router;
