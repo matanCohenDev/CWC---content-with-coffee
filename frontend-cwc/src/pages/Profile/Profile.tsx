@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { getAllPostsByUserId, urlProfilePic } from "../../services/apiServices";
 import PostCard from "../Feed-page/components/PostCard/PostCard";
 import { useState, useEffect } from "react";
-import EditPopup from "../../components/Edit-popup"; // ודא שהנתיב נכון
+import EditPopup from "../../components/Edit-popup";
 
 interface User {
   _id: string;
@@ -29,12 +29,13 @@ interface Post {
 
 export default function Profile() {
   const location = useLocation();
-  const { user } = location.state as { user: User };
+  const { user: initialUser } = location.state as { user: User };
+  const [userData, setUserData] = useState<User>(initialUser);
   const [posts, setPosts] = useState<Post[]>([]);
   const [showEditPopup, setShowEditPopup] = useState(false);
 
   useEffect(() => {
-    getAllPostsByUserId(user._id)
+    getAllPostsByUserId(userData._id)
       .then((data) => {
         if (data.posts) {
           setPosts(data.posts);
@@ -43,7 +44,7 @@ export default function Profile() {
       .catch((error) => {
         console.error("Error fetching posts:", error);
       });
-  }, [user._id]);
+  }, [userData._id]);
 
   const handleOpenEditPopup = () => {
     setShowEditPopup(true);
@@ -59,9 +60,17 @@ export default function Profile() {
     location: string;
     bio: string;
     favoriteCoffee: string;
-    profilePicture: File | null;
+    profilePictureUrl: string;
   }) => {
-    console.log("Updated profile data:", updatedData);
+    setUserData((prevUser) => ({
+      ...prevUser,
+      name: updatedData.name,
+      email: updatedData.email,
+      location: updatedData.location,
+      bio: updatedData.bio,
+      favorite_coffee: updatedData.favoriteCoffee,
+      profile_pic: updatedData.profilePictureUrl,
+    }));
     setShowEditPopup(false);
   };
 
@@ -70,24 +79,24 @@ export default function Profile() {
       <div className={styles.profileHeader}>
         <div className={styles.profilePicContainer} onClick={() => console.log("Open upload image modal")}>
           <img
-            src={urlProfilePic(user?.profile_pic)}
+            src={urlProfilePic(userData.profile_pic)}
             alt="Profile"
             className={styles.profilePic}
           />
         </div>
         <div className={styles.rightSection}>
-          <h2 className={styles.profileName}>{user?.name}</h2>
+          <h2 className={styles.profileName}>{userData.name}</h2>
           <div className={styles.statsRow}>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{user?.followers_count || 0}</span>
+              <span className={styles.statNumber}>{userData.followers_count || 0}</span>
               <span className={styles.statLabel}>Followers</span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{user?.following_count || 0}</span>
+              <span className={styles.statNumber}>{userData.following_count || 0}</span>
               <span className={styles.statLabel}>Following</span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{user?.posts_count || 0}</span>
+              <span className={styles.statNumber}>{userData.posts_count || 0}</span>
               <span className={styles.statLabel}>Posts</span>
             </div>
           </div>
@@ -98,18 +107,10 @@ export default function Profile() {
       </div>
 
       <div className={styles.info}>
-        <p>
-          <strong>Email:</strong> {user?.email}
-        </p>
-        <p>
-          <strong>Location:</strong> {user?.location}
-        </p>
-        <p>
-          <strong>Bio:</strong> {user?.bio}
-        </p>
-        <p>
-          <strong>Favorite Coffee:</strong> {user?.favorite_coffee}
-        </p>
+        <p><strong>Email:</strong> {userData.email}</p>
+        <p><strong>Location:</strong> {userData.location}</p>
+        <p><strong>Bio:</strong> {userData.bio}</p>
+        <p><strong>Favorite Coffee:</strong> {userData.favorite_coffee}</p>
       </div>
 
       <div className={styles.postsContainer}>
@@ -122,15 +123,16 @@ export default function Profile() {
 
       {showEditPopup && (
         <EditPopup
+          userId={userData._id}
           onClose={handleCloseEditPopup}
           onSave={handleSaveProfile}
           initialData={{
-            name: user.name,
-            email: user.email,
-            location: user.location,
-            bio: user.bio,
-            favoriteCoffee: user.favorite_coffee,
-            profilePictureUrl: urlProfilePic(user.profile_pic),
+            name: userData.name,
+            email: userData.email,
+            location: userData.location,
+            bio: userData.bio,
+            favoriteCoffee: userData.favorite_coffee,
+            profilePictureUrl: urlProfilePic(userData.profile_pic),
           }}
         />
       )}

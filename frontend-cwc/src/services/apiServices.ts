@@ -147,23 +147,21 @@ export const uploadImage = async (image: File , postContent: string) => {
   }
 };
 
-export const uploadProfilePic = async (image: File) => {
+export const uploadProfilePic = async (formData: FormData) => {
   try {
-    const formData = new FormData();
-    formData.append("image", image);
-
-    const response = await api.post("/upload/profile", formData, {
+    const response = await api.post("/upload/profile-pics", formData, {
       headers: {
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
-
-    return response.data.imageUrl;
+    return response.data.imageUrl; // מצפה לקבל { success: true, imageUrl } או { imageName }
   } catch (error) {
-    console.error("Failed to upload profile picture:", error);
-    return null;
+    console.error("Error uploading profile picture:", error);
+    throw error;
   }
 };
+
 
 export const getUserIdFromToken = (token: string) => {
   try {
@@ -471,6 +469,22 @@ export const unfollowUser = async (followingId: string) => {
     throw error;
   }
 }
+
+export const updateUser = async (userId: string, userData: any) => {
+  try {
+    const response = await api.put(`/api/user/updateUser/${userId}`, userData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
+  }
+};
+
+
 
 
 

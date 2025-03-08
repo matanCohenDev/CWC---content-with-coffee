@@ -33,7 +33,6 @@ app.use(cors({
   credentials: true, 
 }));
 
-
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -50,14 +49,15 @@ app.use('/api/follow', FollowRoutes);
 
 path.join(__dirname, "public");
 
-const uploadDir = path.join(__dirname , "uploads/posts");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// הגדרת תיקיית העלאת פוסטים
+const postsUploadDir = path.join(__dirname , "uploads/posts");
+if (!fs.existsSync(postsUploadDir)) {
+  fs.mkdirSync(postsUploadDir, { recursive: true });
 }
 
-const storage = multer.diskStorage({
+const postsStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, uploadDir); 
+    cb(null, postsUploadDir); 
   },
   filename: (req, file, cb) => {
     const uniqueName = `${Date.now()}_${file.originalname}`;
@@ -65,20 +65,51 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage });
+const uploadPosts = multer({ storage: postsStorage });
 
-app.post("/upload/post", upload.single("image"), (req: Request, res: Response): void => {
+app.post("/upload/post", uploadPosts.single("image"), (req: Request, res: Response): void => {
   try {
     if (!req.file) {
       res.status(400).json({ message: "No file uploaded" });
       return;
     }
     const imageUrl = `/uploads/posts/${req.file.filename}`;
-    
-    res.json({ success: true, imageUrl});
+    res.json({ success: true, imageUrl });
   } catch (error) {
     console.error("Error uploading post:", error);
     res.status(500).json({ message: "Failed to upload post" });
+  }
+});
+
+// הגדרת תיקיית העלאת תמונות פרופיל
+const profilePicsDir = path.join(__dirname, "uploads/profile-pics");
+if (!fs.existsSync(profilePicsDir)) {
+  fs.mkdirSync(profilePicsDir, { recursive: true });
+}
+
+const profilePicStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, profilePicsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}_${file.originalname}`;
+    cb(null, uniqueName);
+  },
+});
+
+const uploadProfilePic = multer({ storage: profilePicStorage });
+
+app.post("/upload/profile-pics", uploadProfilePic.single("image"), (req: Request, res: Response): void => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ message: "No file uploaded" });
+      return;
+    }
+    const imageUrl = `/uploads/profile-pics/${req.file.filename}`;
+    res.json({ success: true, imageUrl });
+  } catch (error) {
+    console.error("Error uploading profile picture:", error);
+    res.status(500).json({ message: "Failed to upload profile picture" });
   }
 });
 
