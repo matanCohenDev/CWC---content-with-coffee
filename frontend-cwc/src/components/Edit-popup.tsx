@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styles from "./edit-popup.module.css";
 import { updateUser, uploadProfilePic } from "../services/apiServices";
-import { profile } from "node:console";
 
 interface EditPopupProps {
   userId: string;
@@ -46,7 +45,6 @@ export default function EditPopup({ userId, onClose, onSave, initialData }: Edit
   const handleSave = async () => {
     try {
       let profilePictureUrl = initialData.profilePictureUrl;
-
 
       if (profilePicture) {
         const formData = new FormData();

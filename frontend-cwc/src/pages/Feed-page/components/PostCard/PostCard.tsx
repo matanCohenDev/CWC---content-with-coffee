@@ -1,6 +1,7 @@
 import postCardStyles from "./PostCard.module.css";
 import Comments from "./Comments/Comments"; // Adjust the path as needed
-import { Heart, MessageSquare } from "lucide-react";
+import { Edit, Heart, MessageSquare } from "lucide-react";
+import EditPost from "./EditPost/EditPost";
 import { 
   urlImage, 
   getUsernameById, 
@@ -10,6 +11,7 @@ import {
   getUserIdFromToken 
 } from "../../../../services/apiServices";
 import { useEffect, useState } from "react";
+import { url } from "inspector";
 
 interface Post {
   _id: string;
@@ -23,13 +25,15 @@ interface Post {
 interface PostCardProps {
   post: Post;
   variant?: "small" | "large";
+  profileId?: "userProfile" | "profile" | "other";
 }
 
-export default function PostCard({ post, variant = "small" }: PostCardProps) {
+export default function PostCard({ post, variant = "small", profileId = "other"  }: PostCardProps) {
   const [username, setUsername] = useState<string>('');
   const [liked, setLiked] = useState<boolean>(false);
   const [likeId, setLikeId] = useState<string>('');
   const [showComments, setShowComments] = useState<boolean>(false);
+  const [showEditPost, setShowEditPost] = useState<boolean>(false);
   const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
 
   useEffect(() => {
@@ -77,10 +81,16 @@ export default function PostCard({ post, variant = "small" }: PostCardProps) {
 
   return (
     <>
-    <div className={`${postCardStyles.postCard} ${variant === "large" ? postCardStyles.large : postCardStyles.small}`}>
-      <div className={postCardStyles.header}>
-          <div className={postCardStyles.profilePic}></div>
+      <div className={`${postCardStyles.postCard} ${variant === "large" ? postCardStyles.large : postCardStyles.small}`}>
+        <div className={postCardStyles.header}>
           <span className={postCardStyles.username}>{username}</span>
+          {variant === "large" && profileId == "profile" && (
+            <button 
+              className={postCardStyles.button}
+              onClick={() => setShowEditPost(true)}>
+              <Edit size={20} />
+            </button>
+          )}
         </div>
 
         <div className={postCardStyles.postImage}>
@@ -99,16 +109,31 @@ export default function PostCard({ post, variant = "small" }: PostCardProps) {
             onClick={liked ? onhandleClickRemoveLike : onhandleClickLike}>
             <Heart size={20} color={liked ? "red" : "black"} /> {post.likesCount} 
           </button>
+          <div className={postCardStyles.spacer}></div>
           <button 
             className={postCardStyles.button} 
             onClick={() => setShowComments(true)}>
-            <MessageSquare size={20} />{post.commentsCount} 
+            <MessageSquare size={20} /> {post.commentsCount}
           </button>
         </div>
       </div>
       
       {showComments && (
         <Comments postId={post._id} onClose={() => setShowComments(false)} />
+      )}
+
+      {showEditPost && (
+        <EditPost
+          postId={post._id}
+          initialContent={post.content}
+          initialImageUrl={urlImage(post.image)}
+          onClose={() => setShowEditPost(false)}
+          onSave={(updatedPost) => {
+            post.content = updatedPost.content;
+            post.image = updatedPost.imageUrl;
+            setShowEditPost(false);
+          }}
+        />
       )}
     </>
   );

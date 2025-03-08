@@ -27,6 +27,7 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 12px;
+    justify-content: space-between;
 }
 
 .profilePic {

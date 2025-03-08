@@ -77,7 +77,7 @@ const getPostByUserId = async (req: Request, res: Response) => {
 const updatePostById = async (req: Request, res: Response) => {
     try {
         const postId = req.params.postId;
-        const { content, tags } = req.body;
+        const { content, tags, image } = req.body;
         const userId = req.user?._id;
 
         const post = await Post.findById(postId);
@@ -93,6 +93,8 @@ const updatePostById = async (req: Request, res: Response) => {
 
         post.content = content || post.content;
         post.tags = tags || post.tags;
+        post.image = image || post.image; 
+
         await post.save();
 
         res.status(200).json({ success: true, data: post });
@@ -101,6 +103,7 @@ const updatePostById = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
 
 
 const deletePostById = async (req: Request, res: Response) => {
