@@ -1,6 +1,6 @@
 import styles from "./profile.module.css";
 import { useLocation } from "react-router-dom";
-import { getAllPostsByUserId , getUserIdFromToken } from "../../services/apiServices";
+import { getAllPostsByUserId } from "../../services/apiServices";
 import PostCard from "../Feed-page/components/PostCard/PostCard";
 import { useState , useEffect} from "react";
 
@@ -28,14 +28,14 @@ interface Post {
 export default function Profile(){  
   const location = useLocation();
   const { user } = location.state as { user: User };
-  const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
   const [posts, setPosts] = useState<Post[]>([]);
 
   useEffect(() => {
     getAllPostsByUserId(user._id).then((data) => {
-      setPosts(data);
+      setPosts(data.posts);
     });
   }, [user._id]);
+  
 
 
   return (
@@ -82,9 +82,9 @@ export default function Profile(){
       </div>
 
       <div className={styles.postsContainer}>
-          {posts.map((post) => (
-            <PostCard key={post._id} post={post} variant="large" />
-          ))}
+      {Array.isArray(posts) ? posts.map((post) => (
+          <PostCard key={post._id} post={post} variant="large" />
+      )) : <p>No posts available</p>}
       </div>
     </div>
   );
