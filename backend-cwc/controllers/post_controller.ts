@@ -48,8 +48,10 @@ const getPostById = async (req: Request, res: Response) => {
 
 const getPostByUserId = async (req: Request, res: Response) => {
     try {
-        const userId = req.user?._id; 
-        const posts = await Post.find({userId});
+        const userId = req.params.userId; 
+        const posts = await Post.find({
+            userId: userId 
+        });
         if (!posts) {
             res.status(404).json({ message: "No posts found" });
             return;

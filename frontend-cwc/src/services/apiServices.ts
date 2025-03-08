@@ -381,12 +381,13 @@ export const getMessagesBetweenUsers = async (senderId: string, receiverId: stri
 
 export const getAllPostsByUserId = async (userId: string) => {
   try {
-    const response = await api.get(`/api/post/getPostByUserId/${userId}`, {
+    const response = await api.get(`api/post/getPostByUserId/${userId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
-    return response.data.posts;
+
+    return response.data;
   } catch (error) {
     console.error("Error fetching posts:", error);
     throw error;
@@ -421,9 +422,9 @@ export const getAllFollowingByUserId = async (userId: string) => {
   }
 }
 
-export const followUser = async (userId: string) => {
+export const followUser = async (followingId: string) => {
   try {
-    const response = await api.post("/api/follow/follow", { userId }, {
+    const response = await api.post("/api/follow/follow", { followingId }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
@@ -435,9 +436,9 @@ export const followUser = async (userId: string) => {
   }
 }
 
-export const unfollowUser = async (userId: string) => {
+export const unfollowUser = async (followingId: string) => {
   try {
-    const response = await api.post("/api/follow/unfollow", { userId }, {
+    const response = await api.post("/api/follow/unfollow" , { followingId } ,{
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },

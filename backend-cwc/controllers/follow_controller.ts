@@ -9,7 +9,6 @@ const follow = async (req: Request, res: Response):Promise<void> => {
         return;
     }
     const followerId = req.user._id;
-
     try {
         const follow = await Follow.findOne({ follower : followerId, following : followingId });
         if (follow) {
@@ -18,6 +17,7 @@ const follow = async (req: Request, res: Response):Promise<void> => {
         }
         
         const newFollow = new Follow({ followerId, followingId });
+        await newFollow.save();
         const followingUser = await User.findById(followingId);
         if (!followingUser) {
             res.status(404).json({ message: "User not found" });
@@ -39,7 +39,10 @@ const follow = async (req: Request, res: Response):Promise<void> => {
         } else {
             followerUser.following_count = 1;
         }
-        await newFollow.save();
+        await followingUser.save();
+        await followerUser.save();
+        res.status(200).json({ message: "Followed" });
+    
     } catch (error) {
         res.status(500).json({ message: (error as Error).message });
         return;
@@ -49,44 +52,51 @@ const follow = async (req: Request, res: Response):Promise<void> => {
 const unfollow = async (req: Request, res: Response): Promise<void> => {
     const { followingId } = req.body;
     if (!req.user) {
-        res.status(401).json({ message: "Unauthorized" });
-        return;
+      res.status(401).json({ message: "Unauthorized" });
+      return;
     }
     const followerId = req.user._id;
-
+  
     try {
-        const follow = await Follow.findOne({ follower : followerId, following : followingId });
-        if (!follow) {
-            res.status(400).json({ message: "Not following" });
-            return;
-        }
-        const followingUser = await User.findById(followingId);
-        if (!followingUser) {
-            res.status(404).json({ message: "User not found" });
-            return;
-        }
-        if (typeof followingUser.followers_count === 'number') {
-            followingUser.followers_count -= 1;
-        } else {
-            followingUser.followers_count = 0;
-        }
-
-        const followerUser = await User.findById(followerId);
-        if (!followerUser) {
-            res.status(404).json({ message: "User not found" });
-            return;
-        }
-        if (typeof followerUser.following_count === 'number') {
-            followerUser.following_count -= 1;
-        } else {
-            followerUser.following_count = 0;
-        }
-        await Follow.findByIdAndDelete(follow._id);
-    } catch (error) {
-        res.status(500).json({ message: (error as Error).message });
+      const follow = await Follow.findOne({ followerId: followerId, followingId: followingId });
+      if (!follow) {
+        res.status(400).json({ message: "Not following" });
         return;
+      }
+  
+      const followingUser = await User.findById(followingId);
+      if (!followingUser) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+      if (typeof followingUser.followers_count === 'number') {
+        followingUser.followers_count -= 1;
+      } else {
+        followingUser.followers_count = 0;
+      }
+      await followingUser.save(); 
+  
+      const followerUser = await User.findById(followerId);
+      if (!followerUser) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+      if (typeof followerUser.following_count === 'number') {
+        followerUser.following_count -= 1;
+      } else {
+        followerUser.following_count = 0;
+      }
+      await followerUser.save(); 
+  
+      await Follow.findByIdAndDelete(follow._id);
+  
+      res.status(200).json({ message: "Successfully unfollowed", success: true });
+    } catch (error) {
+      res.status(500).json({ message: (error as Error).message });
+      return;
     }
-};
+  };
+  
 
 const getAllFollowersByUserId = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params;
@@ -102,8 +112,8 @@ const getAllFollowersByUserId = async (req: Request, res: Response): Promise<voi
 const getAllFollowingByUserId = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params;
     try {
-        const following = await Follow.find({ follower: userId });
-        res.status(200).json(following);
+        const following = await Follow.find({ followerId: userId });
+        res.status(200).json({ following });
     } catch (error) {
         res.status(500).json({ message: (error as Error).message });
         return;
