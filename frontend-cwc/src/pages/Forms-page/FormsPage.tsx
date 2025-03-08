@@ -26,9 +26,7 @@ const FormsPage: React.FC = () => {
         isRegister ? styles.active : ""
       }`}
     >
-      {/* The two forms:  Login & Register */}
       <div className={`${styles.formBox} ${!isRegister ? "" : "hideLogin"}`}>
-        {/* If we are NOT in register mode, show Login */}
         {!isRegister && <LoginForm />}
       </div>
 
@@ -37,11 +35,9 @@ const FormsPage: React.FC = () => {
           isRegister ? "" : "hideRegister"
         }`}
       >
-        {/* If we are in register mode, show Register */}
         {isRegister && <RegisterForm />}
       </div>
 
-      {/* The big toggler box with panels */}
       <div className={styles.toggleBox}>
         <div className={`${styles.togglePanel} ${styles.toggleLeft}`}>
           <h1>Hello, Welcome!</h1>
