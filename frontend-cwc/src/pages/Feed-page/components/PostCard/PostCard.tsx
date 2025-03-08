@@ -12,7 +12,6 @@ import {
   deletePost
 } from "../../../../services/apiServices";
 import { useEffect, useState } from "react";
-import { url } from "inspector";
 
 interface Post {
   _id: string;
