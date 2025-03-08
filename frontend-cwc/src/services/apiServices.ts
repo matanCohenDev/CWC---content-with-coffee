@@ -379,6 +379,20 @@ export const getMessagesBetweenUsers = async (senderId: string, receiverId: stri
   }
 };
 
+export const getAllPostsByUserId = async (userId: string) => {
+  try {
+    const response = await api.get(`/api/post/getPostByUserId/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data.posts;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw error;
+  }
+}
+
 
 
 
