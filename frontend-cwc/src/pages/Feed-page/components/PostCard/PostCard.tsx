@@ -22,9 +22,10 @@ interface Post {
 
 interface PostCardProps {
   post: Post;
+  variant?: "small" | "large";
 }
 
-export default function PostCard({ post }: PostCardProps) {
+export default function PostCard({ post, variant = "small" }: PostCardProps) {
   const [username, setUsername] = useState<string>('');
   const [liked, setLiked] = useState<boolean>(false);
   const [likeId, setLikeId] = useState<string>('');
@@ -76,8 +77,8 @@ export default function PostCard({ post }: PostCardProps) {
 
   return (
     <>
-      <div className={postCardStyles.postCard}>
-        <div className={postCardStyles.header}>
+    <div className={`${postCardStyles.postCard} ${variant === "large" ? postCardStyles.large : postCardStyles.small}`}>
+      <div className={postCardStyles.header}>
           <div className={postCardStyles.profilePic}></div>
           <span className={postCardStyles.username}>{username}</span>
         </div>

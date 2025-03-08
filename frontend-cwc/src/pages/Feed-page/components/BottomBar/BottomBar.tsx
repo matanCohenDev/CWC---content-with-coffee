@@ -17,10 +17,6 @@ export default function BottomBar({ onPostCreated }: BottomBarProps) {
 
   const handleClickProfile = () => {
     const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
-    console.log(userId);
-    getUserNameDatails(userId).then((response) => {
-      console.log(response);
-    });
     getUserNameDatails(userId).then((response) => {
       navigate("/profile", { state: { user: response } });
     });

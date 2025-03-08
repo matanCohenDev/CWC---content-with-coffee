@@ -9,7 +9,10 @@ const getUserById = async (req: Request, res: Response): Promise<void>  => {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        res.status(200).json({_id : user._id, username: user.name , email: user.email , bio: user.bio , favorite_coffee: user.favorite_coffee , location: user.location  });  
+        res.status(200).json({_id : user._id, username: user.name , email: user.email ,
+            bio: user.bio , favorite_coffee: user.favorite_coffee , location: user.location, 
+            followers_count: user.followers_count , following_count: user.following_count , posts_count: user.posts_count
+          });  
         return;
     } catch (error) {
          res.status(500).json({ message: "Internal server error" });

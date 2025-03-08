@@ -11,7 +11,7 @@ router.get("/getPosts", PostControllers.getPosts);
 
 router.get("/getPostById/:postId", PostControllers.getPostById);
 
-router.get("/getPostByUserId" ,authMiddleware , PostControllers.getPostByUserId);
+router.get("/getPostByUserId/:userId" ,authMiddleware , PostControllers.getPostByUserId);
 
 router.put("/updatePostById/:postId", authMiddleware, PostControllers.updatePostById);
 
