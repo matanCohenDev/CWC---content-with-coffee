@@ -494,6 +494,21 @@ export const updatePost = async (postId: string, postData: { content: string; im
   }
 }
 
+export const deletePost = async (postId: string) => {
+  try {
+    const response = await api.delete(`/api/post/deletePostById/${postId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
+  }
+}
+
 
 
 

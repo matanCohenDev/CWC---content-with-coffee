@@ -1,6 +1,6 @@
 import postCardStyles from "./PostCard.module.css";
 import Comments from "./Comments/Comments"; // Adjust the path as needed
-import { Edit, Heart, MessageSquare } from "lucide-react";
+import { Delete, Edit, Heart, MessageSquare } from "lucide-react";
 import EditPost from "./EditPost/EditPost";
 import { 
   urlImage, 
@@ -8,7 +8,8 @@ import {
   likePost, 
   removeLike, 
   checkIfUserAlreadyLiked, 
-  getUserIdFromToken 
+  getUserIdFromToken , 
+  deletePost
 } from "../../../../services/apiServices";
 import { useEffect, useState } from "react";
 import { url } from "inspector";
@@ -79,17 +80,33 @@ export default function PostCard({ post, variant = "small", profileId = "other" 
     });
   };
 
+  const onClickDelete = (postId: string) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      deletePost(postId).then(() => {
+        alert("Post deleted successfully");
+        window.location.reload();
+      });
+    }
+  }
+
   return (
     <>
       <div className={`${postCardStyles.postCard} ${variant === "large" ? postCardStyles.large : postCardStyles.small}`}>
         <div className={postCardStyles.header}>
           <span className={postCardStyles.username}>{username}</span>
           {variant === "large" && profileId == "profile" && (
+            <div className={postCardStyles.actions}>
             <button 
               className={postCardStyles.button}
               onClick={() => setShowEditPost(true)}>
               <Edit size={20} />
             </button>
+            <button 
+            className={postCardStyles.button}
+            onClick={() => onClickDelete(post._id)}>
+            <Delete size={20} />
+          </button>
+          </div>
           )}
         </div>
 
