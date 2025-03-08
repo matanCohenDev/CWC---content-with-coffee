@@ -7,7 +7,6 @@ interface EditPopupProps {
   onClose: () => void; 
   onSave: (updatedData: {
     name: string;
-    email: string;
     location: string;
     bio: string;
     favoriteCoffee: string;
@@ -15,7 +14,7 @@ interface EditPopupProps {
   }) => void;
   initialData: {
     name: string;
-    email: string;
+    email: string; // still part of initialData if needed elsewhere, but not editable here
     location: string;
     bio: string;
     favoriteCoffee: string;
@@ -25,7 +24,6 @@ interface EditPopupProps {
 
 export default function EditPopup({ userId, onClose, onSave, initialData }: EditPopupProps) {
   const [name, setName] = useState(initialData.name);
-  const [email, setEmail] = useState(initialData.email);
   const [location, setLocation] = useState(initialData.location);
   const [bio, setBio] = useState(initialData.bio);
   const [favoriteCoffee, setFavoriteCoffee] = useState(initialData.favoriteCoffee);
@@ -58,19 +56,18 @@ export default function EditPopup({ userId, onClose, onSave, initialData }: Edit
         profilePictureUrl = profilePictureUrl.substring(22);
 
       const userData = {
-        name : name,
-        email : email,
-        bio : bio,
+        name: name,
+        bio: bio,
         favorite_coffee: favoriteCoffee,
-        location : location,
-        profile_pic : profilePictureUrl,
+        location: location,
+        profile_pic: profilePictureUrl,
       };
 
       const response = await updateUser(userId, userData);
+      console.log("User updated successfully:", response);
 
       onSave({
         name,
-        email,
         location,
         bio,
         favoriteCoffee,
@@ -90,7 +87,7 @@ export default function EditPopup({ userId, onClose, onSave, initialData }: Edit
         <button className={styles.closeButton} onClick={onClose}>✖</button>
         <h2 className={styles.title}>Edit Profile</h2>
 
-        {/* העלאת תמונת פרופיל */}
+        {/* Profile Picture */}
         <div className={styles.profilePicContainer}>
           <img
             src={profilePicturePreview}
@@ -103,27 +100,25 @@ export default function EditPopup({ userId, onClose, onSave, initialData }: Edit
           </label>
         </div>
 
-        {/* שדות טופס */}
+        {/* Name */}
         <div className={styles.formGroup}>
           <label htmlFor="name">Name</label>
           <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="email">Email</label>
-          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        </div>
-
+        {/* Location */}
         <div className={styles.formGroup}>
           <label htmlFor="location">Location</label>
           <input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
         </div>
 
+        {/* Bio */}
         <div className={styles.formGroup}>
           <label htmlFor="bio">Bio</label>
           <textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} />
         </div>
 
+        {/* Favorite Coffee */}
         <div className={styles.formGroup}>
           <label htmlFor="favoriteCoffee">Favorite Coffee</label>
           <input id="favoriteCoffee" type="text" value={favoriteCoffee} onChange={(e) => setFavoriteCoffee(e.target.value)} />
