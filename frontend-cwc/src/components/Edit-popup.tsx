@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import styles from "./edit-popup.module.css";
+import { updateUser, uploadProfilePic } from "../services/apiServices";
+import { profile } from "node:console";
 
 interface EditPopupProps {
+  userId: string;
   onClose: () => void; 
   onSave: (updatedData: {
     name: string;
@@ -9,7 +12,7 @@ interface EditPopupProps {
     location: string;
     bio: string;
     favoriteCoffee: string;
-    profilePicture: File | null;
+    profilePictureUrl: string;
   }) => void;
   initialData: {
     name: string;
@@ -21,7 +24,7 @@ interface EditPopupProps {
   };
 }
 
-export default function EditPopup({ onClose, onSave, initialData }: EditPopupProps) {
+export default function EditPopup({ userId, onClose, onSave, initialData }: EditPopupProps) {
   const [name, setName] = useState(initialData.name);
   const [email, setEmail] = useState(initialData.email);
   const [location, setLocation] = useState(initialData.location);
@@ -40,15 +43,47 @@ export default function EditPopup({ onClose, onSave, initialData }: EditPopupPro
     }
   };
 
-  const handleSave = () => {
-    onSave({
-      name,
-      email,
-      location,
-      bio,
-      favoriteCoffee,
-      profilePicture,
-    });
+  const handleSave = async () => {
+    try {
+      let profilePictureUrl = initialData.profilePictureUrl;
+
+
+      if (profilePicture) {
+        const formData = new FormData();
+        formData.append("image", profilePicture);
+        const uploadResponse = await uploadProfilePic(formData);
+        profilePictureUrl = uploadResponse;
+      }
+      if(profilePictureUrl === initialData.profilePictureUrl)
+        profilePictureUrl = profilePictureUrl.substring(43);
+      else
+        profilePictureUrl = profilePictureUrl.substring(22);
+
+      const userData = {
+        name : name,
+        email : email,
+        bio : bio,
+        favorite_coffee: favoriteCoffee,
+        location : location,
+        profile_pic : profilePictureUrl,
+      };
+
+      const response = await updateUser(userId, userData);
+
+      onSave({
+        name,
+        email,
+        location,
+        bio,
+        favoriteCoffee,
+        profilePictureUrl,
+      });
+
+      onClose();
+    } catch (error) {
+      console.error("Error updating user:", error);
+      alert("Error updating user. Please try again.");
+    }
   };
 
   return (
@@ -57,7 +92,7 @@ export default function EditPopup({ onClose, onSave, initialData }: EditPopupPro
         <button className={styles.closeButton} onClick={onClose}>✖</button>
         <h2 className={styles.title}>Edit Profile</h2>
 
-        
+        {/* העלאת תמונת פרופיל */}
         <div className={styles.profilePicContainer}>
           <img
             src={profilePicturePreview}
@@ -70,61 +105,32 @@ export default function EditPopup({ onClose, onSave, initialData }: EditPopupPro
           </label>
         </div>
 
-        
+        {/* שדות טופס */}
         <div className={styles.formGroup}>
           <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
-        
         <div className={styles.formGroup}>
           <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
         </div>
 
-        
         <div className={styles.formGroup}>
           <label htmlFor="location">Location</label>
-          <input
-            id="location"
-            type="text"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
+          <input id="location" type="text" value={location} onChange={(e) => setLocation(e.target.value)} />
         </div>
 
-        
         <div className={styles.formGroup}>
           <label htmlFor="bio">Bio</label>
-          <textarea
-            id="bio"
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-          />
+          <textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} />
         </div>
 
-        
         <div className={styles.formGroup}>
           <label htmlFor="favoriteCoffee">Favorite Coffee</label>
-          <input
-            id="favoriteCoffee"
-            type="text"
-            value={favoriteCoffee}
-            onChange={(e) => setFavoriteCoffee(e.target.value)}
-          />
+          <input id="favoriteCoffee" type="text" value={favoriteCoffee} onChange={(e) => setFavoriteCoffee(e.target.value)} />
         </div>
 
-        
         <button className={styles.saveButton} onClick={handleSave}>Save</button>
       </div>
     </div>
