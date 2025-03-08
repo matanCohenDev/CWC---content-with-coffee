@@ -127,25 +127,21 @@ export const createPost = async (postContent: string, image: string) => {
   }
 };
 
-export const uploadImage = async (image: File , postContent: string) => {
+export const uploadImage = async (formData: FormData) => {
   try {
-    const formData = new FormData();
-    formData.append("image", image);
-    formData.append("postContent", postContent);
-
     const response = await api.post("/upload/post", formData, {
       headers: {
+        "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
-
-    return response.data.imageUrl;
-  }
-  catch (error) {
-    console.error("Failed to upload image:", error);
-    return null;
+    return response.data.imageUrl; // לדוגמה, "uploads/posts/filename.png"
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    throw error;
   }
 };
+
 
 export const uploadProfilePic = async (formData: FormData) => {
   try {
@@ -483,6 +479,21 @@ export const updateUser = async (userId: string, userData: any) => {
     throw error;
   }
 };
+
+export const updatePost = async (postId: string, postData: { content: string; image: string }) => {
+  try {
+    const response = await api.put(`/api/post/updatePostById/${postId}`, postData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error updating post:", error);
+    throw error;
+  }
+}
+
 
 
 

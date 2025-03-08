@@ -115,7 +115,7 @@ export default function Profile() {
 
       <div className={styles.postsContainer}>
         {Array.isArray(posts) ? (
-          posts.map((post) => <PostCard key={post._id} post={post} variant="large" />)
+          posts.map((post) => <PostCard key={post._id} post={post} variant="large" profileId="profile" />)
         ) : (
           <p>No posts available</p>
         )}
