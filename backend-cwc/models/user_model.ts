@@ -12,6 +12,7 @@ export interface IUser extends Document {
   followers_count?: number;
   following_count?: number;
   posts_count?: number;
+  profile_pic?: string;
   refreshToken?: string[];
   isGoogleUser?: boolean;
 }
@@ -68,6 +69,10 @@ const userSchema = new mongoose.Schema<IUser>({
   posts_count: {
     type: Number,
     default: 0
+  },
+  profile_pic: {
+    type: String,
+    default: "/images.png"
   },
   refreshToken: {
     type: Array,

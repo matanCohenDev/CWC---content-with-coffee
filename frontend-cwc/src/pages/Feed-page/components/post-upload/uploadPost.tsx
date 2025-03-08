@@ -43,12 +43,9 @@ const PostUpload: React.FC<PostUploadProps> = ({ onClose, onPostCreated }) => {
       if (!response) {
         throw new Error("Failed to upload image");
       }
-      // Assuming response is a string representing imageUrl
-      // Remove the first 15 characters to get the image name
       const imageName = response.substring(15);
       await createPost(postContent, imageName);
 
-      // Trigger the callback to update the feed
       onPostCreated();
 
       onClose(); 
