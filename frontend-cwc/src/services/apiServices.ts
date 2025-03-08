@@ -393,6 +393,62 @@ export const getAllPostsByUserId = async (userId: string) => {
   }
 }
 
+export const getAllFollowersByUserId = async (userId: string) => {
+  try {
+    const response = await api.get(`/api/follow/followers/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching followers:", error);
+    throw error;
+  }
+}
+
+export const getAllFollowingByUserId = async (userId: string) => {
+  try {
+    const response = await api.get(`/api/follow/following/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching following:", error);
+    throw error;
+  }
+}
+
+export const followUser = async (userId: string) => {
+  try {
+    const response = await api.post("/api/follow/follow", { userId }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error following user:", error);
+    throw error;
+  }
+}
+
+export const unfollowUser = async (userId: string) => {
+  try {
+    const response = await api.post("/api/follow/unfollow", { userId }, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error unfollowing user:", error);
+    throw error;
+  }
+}
+
 
 
 
