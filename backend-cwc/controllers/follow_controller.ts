@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import Follow , {FollowInterface} from "../models/follow_model";
+import Follow  from "../models/follow_model";
 import User from "../models/user_model";
 
 const follow = async (req: Request, res: Response):Promise<void> => {

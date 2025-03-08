@@ -1,5 +1,6 @@
 import { Request , Response } from "express";
 import Post from "../models/post_model";
+import User from "../models/user_model";
 
 const createPost = async (req: Request, res: Response) => {
     try {
@@ -12,6 +13,17 @@ const createPost = async (req: Request, res: Response) => {
         }
 
         const post = await Post.create({ userId, content, image });
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).json({ success: false, message: "User not found" });
+            return;
+        }
+        if (user.posts_count !== undefined) {
+            user.posts_count += 1;
+        } else {
+            user.posts_count = 1;
+        }
+        await user.save();
         res.status(201).json({ success: true, data: post });
     } catch (error) {
         console.error(error);
