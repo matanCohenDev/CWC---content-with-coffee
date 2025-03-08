@@ -46,7 +46,7 @@ app.use('/api/comment', CommentRoutes);
 app.use('/api/like', LikeRoutes);
 app.use('/api/messages', MessagesRoutes);
 app.use('/api/user', UserRoutes);
-app.use('/api', FollowRoutes);
+app.use('/api/follow', FollowRoutes);
 
 const uploadDir = path.join(__dirname , "uploads/posts");
 if (!fs.existsSync(uploadDir)) {
