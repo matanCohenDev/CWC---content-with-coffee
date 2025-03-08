@@ -36,7 +36,7 @@ const RegisterForm: React.FC = () => {
     try {
       const result = await registerUser(userData);
       console.log('Registration success:', result);
-      navigate('/feed');
+      alert('Registration successful! Please log in.');
     } catch (error) {
       console.error('Error during registration:', error);
     }
@@ -46,7 +46,6 @@ const RegisterForm: React.FC = () => {
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <h1>Registration</h1>
 
-      {/* Name (optional) */}
       <div className={styles.inputBox}>
         <input
           type="text"
@@ -56,7 +55,6 @@ const RegisterForm: React.FC = () => {
         {errors.name && <p className={styles.error}>{errors.name.message}</p>}
       </div>
 
-      {/* Email (Required) */}
       <div className={styles.inputBox}>
         <input
           type="email"
@@ -74,7 +72,6 @@ const RegisterForm: React.FC = () => {
         )}
       </div>
 
-      {/* Password (Required) */}
       <div className={styles.inputBox}>
         <input
           type="password"
@@ -92,7 +89,6 @@ const RegisterForm: React.FC = () => {
         )}
       </div>
 
-      {/* Confirm Password (Required) */}
       <div className={styles.inputBox}>
         <input
           type="password"
@@ -108,7 +104,6 @@ const RegisterForm: React.FC = () => {
         )}
       </div>
 
-      {/* Bio (Optional) */}
       <div className={styles.inputBox}>
         <input
           type="text"
@@ -118,7 +113,6 @@ const RegisterForm: React.FC = () => {
         {errors.bio && <p className={styles.error}>{errors.bio.message}</p>}
       </div>
 
-      {/* Favorite Coffee (Optional) */}
       <div className={styles.inputBox}>
         <input
           type="text"
@@ -130,7 +124,6 @@ const RegisterForm: React.FC = () => {
         )}
       </div>
 
-      {/* Location (Optional) */}
       <div className={styles.inputBox}>
         <input
           type="text"
