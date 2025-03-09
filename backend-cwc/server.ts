@@ -6,6 +6,8 @@ import cors from 'cors';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import swaggerJsDoc from "swagger-jsdoc";
+import swaggerUI from "swagger-ui-express";
 import cookieParser from "cookie-parser";
 import AuthRoutes from './routes/auth_routes';
 import PostRoutes from './routes/post_routes';
@@ -114,5 +116,21 @@ app.post("/upload/profile-pics", uploadProfilePic.single("image"), (req: Request
 });
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+const swaggerOptions = {
+  definition: {
+      openapi: "3.0.0",
+      info: {
+          title: "Auth API",
+          version: "1.0.0",
+          description: "User authentication API"
+      },
+      servers: [{ url: "http://localhost:3000" }]
+  },
+  apis: ["./routes/*.ts"]
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 export default app;
