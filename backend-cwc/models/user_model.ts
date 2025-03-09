@@ -17,6 +17,21 @@ export interface IUser extends Document {
   isGoogleUser?: boolean;
 }
 
+export interface UserInterface {
+  _id?: string
+  email: string;
+  password: string;
+  bio?: string;
+  favorite_coffee?: string;
+  location?: string;
+  refreshToken?: string[];
+  isGoogleUser?: boolean;
+  followers_count?: number;
+  following_count?: number;
+  posts_count?: number;
+  profile_pic?: string;
+}
+
 const userSchema = new mongoose.Schema<IUser>({
   name: {
     type: String,

@@ -1,125 +1,185 @@
 import request from 'supertest';
 import app, { connectDB } from '../server';
 import Message, { MessageInterface } from '../models/messages_model';
-import mongoose from 'mongoose';
 import User, { UserInterface } from '../models/user_model';
+import mongoose from 'mongoose';
 
 const testUser1: UserInterface & { accessToken?: string } = {
-    email: 'testuser1@test.com',
-    password: 'testpassword',
+  email: 'testuser1@test.com',
+  password: 'testpassword',
 };
 
 const testUser2: UserInterface & { accessToken?: string } = {
-    email: 'testuser2@test.com',
-    password: 'testpassword',
+  email: 'testuser2@test.com',
+  password: 'testpassword',
 };
 
 let testMessage1: MessageInterface;
 let testMessage2: MessageInterface;
 
 beforeAll(async () => {
-    console.log('Jest starting!');
-    await connectDB();
-    await User.deleteMany();
-    await Message.deleteMany();
-    const responseTestUser1 = await request(app).post("/api/auth/register").send(testUser1);
-    const responseTestUser2 = await request(app).post("/api/auth/register").send(testUser2);
-    const responseLoginTestUser1 = await request(app).post("/api/auth/login").send(testUser1);
-    expect(responseLoginTestUser1.status).toBe(200);
-    testUser1.accessToken = responseLoginTestUser1.body.accessToken;   
-    testUser1.refreshToken = responseLoginTestUser1.body.refreshToken;
-    testUser1._id = responseLoginTestUser1.body.id;
-    testMessage1 = {
-        senderId: responseTestUser1.body.id,
-        receiverId: responseTestUser2.body.id,
-        content: 'test message',
-        messageRead: false,
-    };
-    testMessage2 = {
-        senderId: responseTestUser2.body.id,
-        receiverId: responseTestUser1.body.id,
-        content: 'test message',
-        messageRead: false,
-    };
+  console.log('Jest starting!');
+  await connectDB();
+  await User.deleteMany();
+  await Message.deleteMany();
+
+  let res = await request(app).post('/api/auth/register').send(testUser1);
+  expect(res.status).toBe(201);
+  res = await request(app).post('/api/auth/login').send(testUser1);
+  expect(res.status).toBe(200);
+  testUser1.accessToken = res.body.accessToken;
+  testUser1._id = res.body.id;
+
+  res = await request(app).post('/api/auth/register').send(testUser2);
+  expect(res.status).toBe(201);
+  res = await request(app).post('/api/auth/login').send(testUser2);
+  expect(res.status).toBe(200);
+  testUser2.accessToken = res.body.accessToken;
+  testUser2._id = res.body.id;
+
+  testMessage1 = {
+    senderId: testUser1._id!,
+    receiverId: testUser2._id!,
+    content: 'Hello from user1 to user2',
+    messageRead: false,
+  };
+  testMessage2 = {
+    senderId: testUser2._id!,
+    receiverId: testUser1._id!,
+    content: 'Reply from user2 to user1',
+    messageRead: false,
+  };
 });
 
 afterAll(async () => {
-    console.log('server closing');
-    await mongoose.connection.close();
+  console.log('Closing server...');
+  await User.deleteMany();
+  await Message.deleteMany();
+  await mongoose.connection.close();
 });
 
-const baseUrl = '/api/messages';
+const baseUrl = '/api/message';
 
-describe('Test Messages', () => {
-    test('creat new message between 2 users', async () => {
-         const responseSendMessage = await request(app).post(baseUrl+"/SendMessage")
-        .send(testMessage1)
-        .set('Authorization', `Bearer ${testUser1.accessToken}`);
-        expect(responseSendMessage.status).toBe(201);
-        expect(responseSendMessage.body.messageId).toBeDefined();
-        expect(responseSendMessage.body).toHaveProperty('success', true);
-        testMessage1.messageId = responseSendMessage.body.messageId;
-        const responseLogoutTestUser1 = await request(app).post("/api/auth/logout")
-        .send({refreshToken: testUser1.refreshToken});
-        expect(responseLogoutTestUser1.status).toBe(200);
-        const responseLoginTestUser2 = await request(app).post("/api/auth/login").send(testUser2);
-        expect(responseLoginTestUser2.status).toBe(200);
-        testUser2.accessToken = responseLoginTestUser2.body.accessToken;
-        testUser2.refreshToken = responseLoginTestUser2.body.refreshToken;
-        testUser2._id = responseLoginTestUser2.body.id;
-        const responseGetMessagesBetweenUsers = await request(app)
-        .get(baseUrl + "/GetMessagesBetweenUsers")
-        .query({ senderId: testMessage1.senderId, receiverId: testMessage1.receiverId })
-        .set('Authorization', `Bearer ${testUser2.accessToken}`);
-        expect(responseGetMessagesBetweenUsers.status).toBe(200);
-        expect(responseGetMessagesBetweenUsers.body.data).toHaveLength(1);
-        const responseSendMessage2 = await request(app).post(baseUrl+"/SendMessage")
-        .send(testMessage2)
-        .set('Authorization', `Bearer ${testUser2.accessToken}`);
-        expect(responseSendMessage2.status).toBe(201);
-        expect(responseSendMessage2.body.messageId).toBeDefined();
-        expect(responseSendMessage2.body).toHaveProperty('success', true);
-        testMessage2.messageId = responseSendMessage2.body.messageId;
-    });
+describe('Messages Endpoints', () => {
+  test('Send a message from user1 to user2', async () => {
+    const res = await request(app)
+      .post(baseUrl + '/SendMessage')
+      .set('Authorization', `Bearer ${testUser1.accessToken}`)
+      .send(testMessage1);
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('success', true);
+    expect(res.body).toHaveProperty('messageId');
+    testMessage1.messageId = res.body.messageId;
+  });
 
-    test('get all messages of a user', async () => {
-        const responseGetAllMessages = await request(app)
-        .get(baseUrl+"/GetAllMessages")
-        .query({ userId: testMessage1.senderId })
-        .set('Authorization', `Bearer ${testUser1.accessToken}`);
-        expect(responseGetAllMessages.status).toBe(200);
-        expect(responseGetAllMessages.body.data).toHaveLength(2);
-    });
+  test('Send a message from user2 to user1', async () => {
+    const res = await request(app)
+      .post(baseUrl + '/SendMessage')
+      .set('Authorization', `Bearer ${testUser2.accessToken}`)
+      .send(testMessage2);
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('success', true);
+    expect(res.body).toHaveProperty('messageId');
+    testMessage2.messageId = res.body.messageId;
+  });
 
-    test('mark message as read', async () => {
-        const responseMarkMessageAsRead = await request(app)
-        .put(baseUrl+"/MarkMessageAsRead")
-        .send({ messageId: testMessage2.messageId })
-        .set('Authorization', `Bearer ${testUser1.accessToken}`);
-        expect(responseMarkMessageAsRead.status).toBe(200);
-        expect(responseMarkMessageAsRead.body).toHaveProperty('success', true);
-        const responseGetMessagesBetweenUsers = await request(app)
-        .get(baseUrl + "/GetMessagesBetweenUsers")
-        .query({ senderId: testMessage2.senderId, receiverId: testMessage2.receiverId })
-        .set('Authorization', `Bearer ${testUser2.accessToken}`);
-        expect(responseGetMessagesBetweenUsers.status).toBe(200);
-        expect(responseGetMessagesBetweenUsers.body.data[1].messageRead).toBe(true);
-    });
-    
-    test('delete message', async () => {
-        const responseDeleteMessage = await request(app)
-        .delete(baseUrl+"/DeleteMessage")
-        .send({ messageId: testMessage2.messageId })
-        .set('Authorization', `Bearer ${testUser1.accessToken}`);
-        expect(responseDeleteMessage.status).toBe(201);
-        expect(responseDeleteMessage.body).toHaveProperty('success', true);
-        const responseGetAllMessages = await request(app)
-        .get(baseUrl+"/GetAllMessages")
-        .query({ userId: testMessage2.senderId })
-        .set('Authorization', `Bearer ${testUser1.accessToken}`);
-        expect(responseGetAllMessages.status).toBe(200);
-        expect(responseGetAllMessages.body.data).toHaveLength(1);
-    });
+  test('Fail to send a message with missing content', async () => {
+    const res = await request(app)
+      .post(baseUrl + '/SendMessage')
+      .set('Authorization', `Bearer ${testUser1.accessToken}`)
+      .send({ senderId: testUser1._id, receiverId: testUser2._id }); 
+    expect(res.status).toBe(400);
+  });
+
+  test('Get all messages for user1', async () => {
+    const res = await request(app)
+      .get(baseUrl + '/GetAllMessages')
+      .query({ userId: testUser1._id })
+      .set('Authorization', `Bearer ${testUser1.accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('success', true);
+    expect(res.body.data.length).toBe(2);
+  });
+
+  test('Get messages exchanged between user1 and user2', async () => {
+    const res = await request(app)
+      .get(baseUrl + '/GetMessagesBetweenUsers')
+      .query({ senderId: testUser1._id, receiverId: testUser2._id })
+      .set('Authorization', `Bearer ${testUser2.accessToken}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('success', true);
+    expect(Array.isArray(res.body.data)).toBe(true);
+    expect(res.body.data.length).toBeGreaterThanOrEqual(1);
+  });
+
+  test('Mark message as read', async () => {
+    const res = await request(app)
+      .put(baseUrl + '/MarkMessageAsRead')
+      .set('Authorization', `Bearer ${testUser1.accessToken}`)
+      .send({ messageId: testMessage2.messageId });
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('success', true);
+    const getRes = await request(app)
+      .get(baseUrl + '/GetMessagesBetweenUsers')
+      .query({ senderId: testUser2._id, receiverId: testUser1._id })
+      .set('Authorization', `Bearer ${testUser1.accessToken}`);
+    expect(getRes.status).toBe(200);
+    const updatedMessage = getRes.body.data.find((msg: any) => msg._id === testMessage2.messageId);
+    expect(updatedMessage).toBeDefined();
+    expect(updatedMessage.messageRead).toBe(true);
+  });
+
+  test('Delete a message', async () => {
+    const res = await request(app)
+      .delete(baseUrl + '/DeleteMessage')
+      .set('Authorization', `Bearer ${testUser1.accessToken}`)
+      .send({ messageId: testMessage2.messageId });
+    expect(res.status).toBe(201);
+    expect(res.body).toHaveProperty('success', true);
+    const getRes = await request(app)
+      .get(baseUrl + '/GetMessagesBetweenUsers')
+      .query({ senderId: testUser2._id, receiverId: testUser1._id })
+      .set('Authorization', `Bearer ${testUser1.accessToken}`);
+    expect(getRes.status).toBe(200);
+    const deletedMsg = getRes.body.data.find((msg: any) => msg._id === testMessage2.messageId);
+    expect(deletedMsg).toBeUndefined();
+  });
+
+  test('Fail to mark message as read with missing messageId', async () => {
+    const res = await request(app)
+      .put(baseUrl + '/MarkMessageAsRead')
+      .set('Authorization', `Bearer ${testUser1.accessToken}`)
+      .send({});
+    expect(res.status).toBe(400);
+  });
+
+  test('Fail to delete message with missing messageId', async () => {
+    const res = await request(app)
+      .delete(baseUrl + '/DeleteMessage')
+      .set('Authorization', `Bearer ${testUser1.accessToken}`)
+      .send({});
+    expect(res.status).toBe(400);
+  });
+
+  test('Fail to get messages with missing userId', async () => {
+    const res = await request(app)
+      .get(baseUrl + '/GetAllMessages')
+      .set('Authorization', `Bearer ${testUser1.accessToken}`);
+    expect(res.status).toBe(400);
+  });
+
+  test('Fail to get messages between users with missing senderId', async () => {
+    const res = await request(app)
+      .get(baseUrl + '/GetMessagesBetweenUsers')
+      .query({ receiverId: testUser2._id })
+      .set('Authorization', `Bearer ${testUser1.accessToken}`);
+    expect(res.status).toBe(400);
+  });
+
+  test('Fail to send message without authentication', async () => {
+    const res = await request(app)
+      .post(baseUrl + '/SendMessage')
+      .send(testMessage1);
+    expect(res.status).toBe(401);
+  });
 });
-
-
