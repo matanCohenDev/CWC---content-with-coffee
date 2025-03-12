@@ -5,19 +5,43 @@ import { UserProvider } from "./context/UserContext";
 import Feed from "./pages/Feed-page/Feed";
 import Profile from "./pages/Profile/Profile";
 import UserProfile from "./pages/User-profile/UserProfile";
+import ProtectedRoute from "./components/ProtectedRoute"; 
 
 function App() {
   return (
     <UserProvider>
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<FormsPage />} />
-        <Route path="/feed" element={<Feed />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/UserProfile" element={<UserProfile />} />
-      </Routes>
-    </Router>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<FormsPage />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/feed"
+            element={
+              <ProtectedRoute>
+                <Feed />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/UserProfile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
     </UserProvider>
   );
 }

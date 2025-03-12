@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './login-page.module.css';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { loginUser, fetchUser } from '../../services/apiServices';
+import { loginUser, fetchUser, googleLoginUser } from '../../services/apiServices';
 import { useUser } from "../../context/UserContext";
-import {googleLoginUser} from '../../services/apiServices';
 import { GoogleLogin } from '@react-oauth/google';
-
 
 type LoginInputs = {
   email: string;
@@ -14,7 +12,7 @@ type LoginInputs = {
 };
 
 const LoginForm: React.FC = () => {
-  const { setUser } = useUser();
+  const { setUser, setToken } = useUser();
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -27,8 +25,7 @@ const LoginForm: React.FC = () => {
         return;
       }
   
-      await googleLoginUser(token, setUser);
-  
+      await googleLoginUser(token, setUser, setToken);
       navigate("/feed");
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.message) {
@@ -36,23 +33,24 @@ const LoginForm: React.FC = () => {
       } else {
         setErrorMessage("An unexpected error occurred.");
       }
-      console.error("Error during login:", error);
+      console.error("Error during Google login:", error);
     }
   };
 
   const onError = () => {
     console.log('Login Failed');
   };
+
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInputs>();
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
-      const result = await loginUser(data.email, data.password, setUser);
+      const result = await loginUser(data.email, data.password, setUser, setToken);
       localStorage.setItem("accessToken", result.accessToken);
   
-      const user = await fetchUser();
-      if (user) {
-        setUser(user);
+      const userData = await fetchUser();
+      if (userData) {
+        setUser(userData);
       }
   
       navigate("/feed"); 
@@ -66,14 +64,10 @@ const LoginForm: React.FC = () => {
     }
   };
 
-  
-  
-
   return (
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <h1>Login</h1>
       {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-
 
       {/* Email */}
       <div className={styles.inputBox}>
@@ -101,7 +95,6 @@ const LoginForm: React.FC = () => {
 
       <button type="submit" className={styles.btn}>Login</button>
       <GoogleLogin onSuccess={onSuccess} onError={onError} />
-
     </form>
   );
 };

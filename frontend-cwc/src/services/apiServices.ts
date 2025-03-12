@@ -22,15 +22,21 @@ const googleclientid = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 export const getGoogleClientId = () => {
   return googleclientid;
 };
-export const loginUser = async (email: string, password: string, setUser: (user: User | null) => void) => {
+export const loginUser = async (
+  email: string,
+  password: string,
+  setUser: (user: User | null) => void,
+  setToken: (token: string | null) => void
+) => {
   try {
     const response = await api.post('/api/auth/login', { email, password });
 
     localStorage.setItem("accessToken", response.data.accessToken);
+    setToken(response.data.accessToken);
 
     const userData = await fetchUser();
     if (userData) {
-      setUser(userData); 
+      setUser(userData);
     }
 
     return response.data;
@@ -38,7 +44,6 @@ export const loginUser = async (email: string, password: string, setUser: (user:
     throw error;
   }
 };
-
 
 export const registerUser = async (userData: {
   name?: string;
@@ -85,7 +90,7 @@ export const fetchUser = async () => {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
 
-    return response.data.user;
+    return response.data;
   } catch (error) {
     console.error("Failed to fetch user:", error);
     return null;
@@ -155,7 +160,7 @@ export const uploadProfilePic = async (formData: FormData) => {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
     });
-    return response.data.imageUrl; // מצפה לקבל { success: true, imageUrl } או { imageName }
+    return response.data.imageUrl; 
   } catch (error) {
     console.error("Error uploading profile picture:", error);
     throw error;
@@ -216,12 +221,14 @@ export const getUsernameById = async (userId: string) => {
 
 export const googleLoginUser = async (
   token: string,
-  setUser: (user: User | null) => void
+  setUser: (user: User | null) => void,
+  setToken: (token: string | null) => void
 ) => {
   try {
     const response = await api.post("/api/auth/google", { token });
 
     localStorage.setItem("accessToken", response.data.accessToken);
+    setToken(response.data.accessToken);
 
     const userData = await fetchUser();
     if (userData) {
@@ -235,9 +242,17 @@ export const googleLoginUser = async (
   }
 };
 
-export const logoutUser = async () => {
+export const logoutUser = async (
+  setUser: (user: User | null) => void,
+  setToken: (token: string | null) => void
+) => {
   try {
     await api.post("/api/auth/logout");
+
+    localStorage.removeItem("accessToken");
+    setToken(null);
+    setUser(null);
+
     return true;
   } catch (error) {
     console.error("Logout failed", error);
