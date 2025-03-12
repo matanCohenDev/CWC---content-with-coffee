@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./chat.module.css";
 import { Send, X } from "lucide-react";
-import io, { type Socket } from "socket.io-client";
-import { getUserIdFromToken, getMessagesBetweenUsers } from "../../../../../services/apiServices";
+import  { type Socket } from "socket.io-client";
+import { getUserIdFromToken, getMessagesBetweenUsers,getSocket } from "../../../../../services/apiServices";
 
 export interface Message {
   _id: string;
@@ -28,25 +28,26 @@ export default function Chat(props: ChatProps) {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const fetchedMessages = await getMessagesBetweenUsers(userId, props._id);
+        const token = localStorage.getItem("accessToken") || "";
+        const fetchedMessages = await getMessagesBetweenUsers(userId, props._id, token);
         setMessages(fetchedMessages);
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
     };
+    
     fetchMessages();
-    socketRef.current = io("http://localhost:3000");
-    socketRef.current.on("message", (data: Message) => {
-      setMessages(prev => [...prev, data]);
+    if (!socketRef.current) {
+      socketRef.current = getSocket(); 
+    }
+  
+    socketRef.current?.on("message", (data: Message) => {
+      setMessages((prev) => [...prev, data]);
     });
-    socketRef.current.on("connect", () => {
-      console.log("Socket connected:", socketRef.current?.id);
-    });
-    socketRef.current.on("disconnect", () => {
-      console.log("Socket disconnected");
-    });
+  
     return () => {
-      socketRef.current?.disconnect();
+     
+      socketRef.current?.off("message");
     };
   }, [userId, props._id]);
 

@@ -1,4 +1,4 @@
-import postCardStyles from "./PostCard.module.css";
+import postCardStyles from "./postCard.module.css";
 import Comments from "./Comments/Comments"; // Adjust the path as needed
 import { Delete, Edit, Heart, MessageSquare } from "lucide-react";
 import EditPost from "./EditPost/EditPost";

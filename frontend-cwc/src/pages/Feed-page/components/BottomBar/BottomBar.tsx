@@ -1,5 +1,5 @@
 import { useState } from "react";
-import bottomBarStyles from "./BottomBar.module.css";
+import bottomBarStyles from "./bottomBar.module.css";
 import { User, PlusCircle, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import PostUpload from "../post-upload/uploadPost";

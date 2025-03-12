@@ -1,17 +1,34 @@
 import http from 'http';
+import https from 'https';
 import { Server } from 'socket.io';
 import app, { connectDB } from "./server";
 import path from "path";
 import express from "express";
-import Message from './models/messages_model'; 
+import fs from 'fs';
+import Message from './models/messages_model';
 
 const PORT = process.env.PORT || 8080;
+const BASE_URL = process.env.BASE_URL;
 
-const httpServer = http.createServer(app);
+const isProduction = process.env.NODE_ENV?.trim().toLowerCase() === 'production';
 
-const io = new Server(httpServer, {
+
+
+let server: http.Server | https.Server;
+
+if (isProduction) {
+  const options = {
+    key: fs.readFileSync('/home/st111/client-key.pem'),
+    cert: fs.readFileSync('/home/st111/client-cert.pem')
+  };
+  server = https.createServer(options, app);
+} else {
+  server = http.createServer(app);
+}
+
+const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:5173', 
+    origin: BASE_URL,
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -46,22 +63,15 @@ io.on('connection', (socket) => {
 });
 
 connectDB().then(() => {
-  console.log("✅ Registering API routes before serving frontend");
-
-  app._router.stack.forEach((route: any) => {
-    if (route.route && route.route.path) {
-      console.log(`Registered route: ${route.route.path}`);
-    }
-  });
-
   app.use(express.static(path.join(__dirname, "../frontend-cwc/dist")));
+  
 
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "../frontend-cwc/dist/index.html"));
   });
 
-  httpServer.listen(PORT, () => {
-    console.log(`✅ Server listening on port ${PORT}`);
+  server.listen(PORT, () => {
+    console.log(`✅ ${isProduction ? "HTTPS" : "HTTP"} Server listening on port ${PORT}`);
   });
 
 }).catch((error) => {

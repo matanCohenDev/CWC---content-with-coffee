@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./SearchComponent.module.css";
+import styles from "./searchComponent.module.css";
 import { X } from "lucide-react";
 import { getAllUsers , getUserIdFromToken } from "../../../../services/apiServices";
 
