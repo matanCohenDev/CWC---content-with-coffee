@@ -3,6 +3,9 @@ import { useLocation } from "react-router-dom";
 import { getAllPostsByUserId, followUser , getAllFollowingByUserId , getUserIdFromToken , unfollowUser, urlProfilePic } from "../../services/apiServices";
 import PostCard from "../Feed-page/components/PostCard/PostCard";
 import { useState , useEffect} from "react";
+import { useNavigate } from "react-router-dom";
+
+
 
 interface User {
   _id: string;
@@ -32,7 +35,8 @@ interface Follow {
   followingId: string;
 }
 
-export default function UserProfile(){  
+export default function UserProfile(){ 
+  const navigate = useNavigate();
   const location = useLocation();
   const { user } = location.state as { user: User };
   const [posts, setPosts] = useState<Post[]>([]);
@@ -83,6 +87,9 @@ export default function UserProfile(){
   return (
     <div className={styles.profileContainer}>
       <div className={styles.profileHeader}>
+      <button className={styles.backButton} onClick={() => navigate("/feed")}>
+        &larr; Back to Feed
+      </button>
         <img
           src={urlProfilePic(user?.profile_pic)}
           alt="Profile"
@@ -131,5 +138,6 @@ export default function UserProfile(){
           ))}
       </div>
     </div>
+    
   );
 };
