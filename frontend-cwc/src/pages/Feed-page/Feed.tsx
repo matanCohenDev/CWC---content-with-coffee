@@ -7,15 +7,15 @@ import DecorativeSvgs from "./components/DecorativeSvgs/DecorativeSvgs";
 import { Send } from "lucide-react";
 import logo from "../../assets/pics/landingPage-pics/logo.png";
 import CoffeeSmartChat from "./components/chatbot/chatbot";
-import { getPosts ,logoutUser } from "../../services/apiServices";
+import { getPosts, logoutUser } from "../../services/apiServices";
 import { useNavigate } from "react-router-dom";
-
+import { useUser } from "../../context/UserContext";
 
 const Feed: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const navigate = useNavigate();
-
+  const { setUser, setToken } = useUser();
 
   const loadPosts = async () => {
     try {
@@ -29,15 +29,20 @@ const Feed: React.FC = () => {
   useEffect(() => {
     loadPosts();
   }, []);
+
   const handleLogout = async () => {
     try {
-      await logoutUser(); 
-      localStorage.removeItem("accessToken");
-      navigate("/login");
+      const success = await logoutUser(setUser, setToken);
+      if (success) {
+        localStorage.removeItem("accessToken");
+        navigate("/login", { replace: true });
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
+
   return (
     <div className={styles.feedContainer}>
       <DecorativeSvgs />
@@ -56,10 +61,9 @@ const Feed: React.FC = () => {
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <div className={styles.postsContainer}>
-      {posts.slice().reverse().map((post) => (
-        <PostCard key={post._id} post={post} />
-      ))}
-
+        {posts.slice().reverse().map((post) => (
+          <PostCard key={post._id} post={post} />
+        ))}
       </div>
 
       <BottomBar onPostCreated={loadPosts} />
