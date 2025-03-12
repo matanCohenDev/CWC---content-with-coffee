@@ -56,7 +56,6 @@ export default function Profile() {
 
   const handleSaveProfile = (updatedData: {
     name: string;
-    email: string;
     location: string;
     bio: string;
     favoriteCoffee: string;
@@ -65,7 +64,6 @@ export default function Profile() {
     setUserData((prevUser) => ({
       ...prevUser,
       name: updatedData.name,
-      email: updatedData.email,
       location: updatedData.location,
       bio: updatedData.bio,
       favorite_coffee: updatedData.favoriteCoffee,

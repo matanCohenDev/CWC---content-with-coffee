@@ -1,5 +1,5 @@
 import React from "react";
-import SideBarStyles from "./Sidebar.module.css";
+import SideBarStyles from "./sideBar.module.css";
 import { X } from "lucide-react";
 import { getAllUsers, getUserIdFromToken } from "../../../../services/apiServices";
 import Chat from "./Chat/Chat";

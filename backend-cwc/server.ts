@@ -18,6 +18,7 @@ import UserRoutes from './routes/user_routes';
 import FollowRoutes from './routes/follow_routes';
 
 dotenv.config();
+const BASE_URL = process.env.BASE_URL;
 
 export const connectDB = async () => {
   try {
@@ -31,7 +32,7 @@ export const connectDB = async () => {
 
 const app = express();
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: BASE_URL,
   credentials: true, 
 }));
 
@@ -45,7 +46,7 @@ app.use('/api/auth', AuthRoutes);
 app.use('/api/post', PostRoutes);
 app.use('/api/comment', CommentRoutes);
 app.use('/api/like', LikeRoutes);
-app.use('/api/messages', MessagesRoutes);
+app.use('/api/message', MessagesRoutes);
 app.use('/api/user', UserRoutes);
 app.use('/api/follow', FollowRoutes);
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import styles from './Register-page.module.css';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../../services/apiServices';
 
 type FormInputs = {
@@ -15,7 +14,6 @@ type FormInputs = {
 };
 
 const RegisterForm: React.FC = () => {
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,

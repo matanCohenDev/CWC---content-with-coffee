@@ -196,38 +196,6 @@ router.post("/login", authControllers.login);
 
 /**
  * @swagger
- * /api/auth/refresh:
- *   post:
- *     summary: Refresh access token
- *     tags: [Auth]
- *     parameters:
- *       - in: cookie
- *         name: refreshToken
- *         schema:
- *           type: string
- *         required: true
- *         description: Refresh token provided as an HTTP-only cookie.
- *     responses:
- *       200:
- *         description: Tokens refreshed successfully
- *         headers:
- *           Set-Cookie:
- *             schema:
- *               type: string
- *               description: New refresh token cookie
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/AuthResponse"
- *       401:
- *         description: Unauthorized or invalid refresh token
- *       500:
- *         description: Internal server error
- */
-router.post("/refresh", authControllers.refresh);
-
-/**
- * @swagger
  * /api/auth/me:
  *   get:
  *     summary: Get current user
@@ -240,7 +208,8 @@ router.post("/refresh", authControllers.refresh);
  *         required: true
  *         schema:
  *           type: string
- *         description: Bearer token. Example: "Bearer {accessToken}"
+ *         description: |
+ *           Bearer token. Example: "Bearer {accessToken}"
  *     responses:
  *       200:
  *         description: User data retrieved successfully
@@ -294,112 +263,10 @@ router.get("/me", authControllers.getUser);
  */
 router.post("/logout", authControllers.logout);
 
-/**
- * @swagger
- * /api/auth/generateContent:
- *   post:
- *     summary: Generate chat content
- *     tags: [Auth]
- *     requestBody:
- *       description: Chat request with a user message.
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               message:
- *                 type: string
- *                 example: "Tell me about coffee."
- *             required:
- *               - message
- *     responses:
- *       200:
- *         description: Generated chat content returned successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 response:
- *                   type: string
- *                   example: "Coffee is great!"
- *       400:
- *         description: Message is required
- *       500:
- *         description: Internal server error
- */
 router.post("/generateContent", authControllers.chatController);
 
-/**
- * @swagger
- * /api/auth/getUserNameById/{id}:
- *   get:
- *     summary: Get username by user ID
- *     tags: [Auth]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The user ID
- *     responses:
- *       200:
- *         description: Username retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 username:
- *                   type: string
- *                   example: "John Doe"
- *       404:
- *         description: User not found
- *       500:
- *         description: Internal server error
- */
 router.get("/getUserNameById/:id", authControllers.getNameByid);
 
-/**
- * @swagger
- * /api/auth/google:
- *   post:
- *     summary: Google Login
- *     tags: [Auth]
- *     requestBody:
- *       description: Google token for authentication
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               token:
- *                 type: string
- *                 example: "GOOGLE_ID_TOKEN"
- *             required:
- *               - token
- *     responses:
- *       200:
- *         description: Google login successful
- *         headers:
- *           Set-Cookie:
- *             schema:
- *               type: string
- *               description: Refresh token cookie
- *         content:
- *           application/json:
- *             schema:
- *               $ref: "#/components/schemas/AuthResponse"
- *       400:
- *         description: No token provided
- *       401:
- *         description: Invalid Google token
- *       500:
- *         description: Internal server error
- */
 router.post("/google", authControllers.googleLogin);
 
 export default router;

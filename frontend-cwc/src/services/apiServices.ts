@@ -1,4 +1,6 @@
 import axios from 'axios';
+import  io  from "socket.io-client";
+import  { type Socket } from "socket.io-client";
 
 interface User {
   id: string;
@@ -13,6 +15,8 @@ const api = axios.create({
   baseURL,
   withCredentials: true,
 });
+const SOCKET_URL = import.meta.env.VITE_API_BASE_URL
+let socket:typeof Socket | null = null;
 
 const googleclientid = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 export const getGoogleClientId = () => {
@@ -367,7 +371,7 @@ export const getCommentsByPostId = async (postId: string) => {
 
 export const SendMessage = async (senderId: string, receiverId: string, content: string) => {
   try {
-    const response = await api.post("/api/messages/SendMessage", { senderId, receiverId, content }, {
+    const response = await api.post("/api/message/SendMessage", { senderId, receiverId, content }, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
@@ -380,15 +384,13 @@ export const SendMessage = async (senderId: string, receiverId: string, content:
   }
 }
 
-export const getMessagesBetweenUsers = async (senderId: string, receiverId: string) => {
+export const getMessagesBetweenUsers = async (senderId: string, receiverId: string, token: string) => {
   try {
-    const response = await api.get("/api/messages/GetMessagesBetweenUsers", {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-      },
+    const response = await api.get("/api/message/GetMessagesBetweenUsers", {
+      headers: { Authorization: `Bearer ${token}` },
       params: { senderId, receiverId },
     });
-    return response.data.data; 
+    return response.data.data;
   } catch (error) {
     console.error("Error fetching messages:", error);
     throw error;
@@ -508,7 +510,26 @@ export const deletePost = async (postId: string) => {
     throw error;
   }
 }
+export const getSocket = ():  typeof Socket => {
+  if (!socket) {
+    socket = io(SOCKET_URL, {
+      transports: ["websocket"],
+      autoConnect: true,
+      auth: {
+        token: `Bearer ${localStorage.getItem("accessToken")}`
+      },
+    });
 
+    socket.on("connect", () => {
+      console.log("✅ Socket connected:", socket!.id);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❌ Socket disconnected");
+    });
+  }
+  return socket;
+};
 
 
 
