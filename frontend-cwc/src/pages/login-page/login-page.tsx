@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './login-page.module.css';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -16,6 +16,8 @@ type LoginInputs = {
 const LoginForm: React.FC = () => {
   const { setUser } = useUser();
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const onSuccess = async (credentialResponse: any) => {
     try {
       console.log("credentialResponse:", credentialResponse);
@@ -28,9 +30,14 @@ const LoginForm: React.FC = () => {
       await googleLoginUser(token, setUser);
   
       navigate("/feed");
-    } catch (error) {
-      console.error("Google login failed:", error);
-    } 
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage("An unexpected error occurred.");
+      }
+      console.error("Error during login:", error);
+    }
   };
 
   const onError = () => {
@@ -42,14 +49,19 @@ const LoginForm: React.FC = () => {
     try {
       const result = await loginUser(data.email, data.password, setUser);
       localStorage.setItem("accessToken", result.accessToken);
-
+  
       const user = await fetchUser();
       if (user) {
         setUser(user);
       }
-
+  
       navigate("/feed"); 
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage("An unexpected error occurred.");
+      }
       console.error("Error during login:", error);
     }
   };
@@ -60,6 +72,8 @@ const LoginForm: React.FC = () => {
   return (
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <h1>Login</h1>
+      {errorMessage && <p className={styles.error}>{errorMessage}</p>}
+
 
       {/* Email */}
       <div className={styles.inputBox}>

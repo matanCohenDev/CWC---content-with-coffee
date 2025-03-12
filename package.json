@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "cd backend-cwc && npm i && cp .env_dev .env && npx ts-node app.ts",
+    "server": "cd backend-cwc && npm i && shx cp .env_dev .env && npx ts-node app.ts",
     "server_prod": "cd backend-cwc && npm i && cp .env_prod .env && NODE_ENV=production npx ts-node app.ts",
-    "client": "cd frontend-cwc && cp .env_dev .env && npm i && npm run dev",
+    "client": "cd frontend-cwc && shx cp .env_dev .env && npm i && npm run dev",
     "client_prod": "cd frontend-cwc && cp .env_prod .env && npm i && npm run build",
     "dev": "npm i && concurrently \"npm run server\" \"npm run client\"",
     "prod": " NODE_ENV=production && npm i && npm run client_prod && npm run server_prod "
@@ -34,6 +34,7 @@
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",
     "@types/node": "^22.10.4",
+    "shx": "^0.3.4",
     "ts-node": "^10.9.2"
   }
 }
