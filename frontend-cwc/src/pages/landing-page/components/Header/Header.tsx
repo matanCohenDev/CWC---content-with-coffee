@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";  
 import HeaderStyle from "./Header.module.css";
+import logo from "../../../../assets/pics/landingPage-pics/logo.png";
 
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -15,7 +16,7 @@ export default function Header() {
         <header className={HeaderStyle.header}>
             <div className={HeaderStyle.container}>
                 <img
-                    src="/src/assets/pics/landingPage-pics/logo.png"
+                    src={logo}
                     alt="logo"
                     className={HeaderStyle.logo}
                 />

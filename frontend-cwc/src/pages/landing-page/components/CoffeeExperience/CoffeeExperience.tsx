@@ -4,6 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import CoffeeExperienceStyle from "./CoffeeExperience.module.css";
 import FeatherSvg from "../../../../assets/svg/Feather.svg";
 import HeartSvg from "../../../../assets/svg/Heart.svg";
+import CoffeeBeans from '../../../../assets/pics/landingPage-pics/CardStack/CoffeeBeans.jpg';
+import CoffeeMachine from '../../../../assets/pics/landingPage-pics/CardStack/CoffeeMachine.jpg';
+import CoffeeGrinder from '../../../../assets/pics/landingPage-pics/CardStack/CoffeeGrinder.jpg';
+import CoffeeCup from '../../../../assets/svg/CoffeeCup.svg';
 
 type Card = {
   id: number;
@@ -18,28 +22,28 @@ const items: Card[] = [
     id: 1,
     name: "Fresh Coffee Beans",
     designation: "Premium Selection",
-    image: "/src/assets/pics/landingPage-pics/CardStack/CoffeeBeans.jpg",
+    image: CoffeeBeans,
     content: "Experience the finest, freshly roasted coffee beans for the perfect brew.",
   },
   {
     id: 2,
     name: "Coffee Machines",
     designation: "High-End Brewing",
-    image: "/src/assets/pics/landingPage-pics/CardStack/CoffeeMachine.jpg",
+    image: CoffeeMachine,
     content: "Find the best coffee machines for home and professional use.",
   },
   {
     id: 3,
     name: "Grinding Perfection",
     designation: "Top Coffee Grinders",
-    image: "/src/assets/pics/landingPage-pics/CardStack/CoffeeGrinder.jpg",
+    image: CoffeeGrinder,
     content: "Grind your beans to perfection with our selection of top-rated grinders.",
   },
   {
     id: 4,
     name: "Specialty Coffee Recipes",
     designation: "Unique & Delicious",
-    image: "/src/assets/pics/landingPage-pics/CardStack/CoffeeCup.jpg",
+    image: CoffeeCup,
     content: "Learn how to create the perfect espresso, latte, and specialty drinks.",
   },
 ];

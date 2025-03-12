@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import DescriptionStyle from './Description.module.css';
+import CoffeeImage from '../../../../assets/pics/landingPage-pics/CoffeeImage.png';
 
 export default function Description() {
     return (
@@ -19,7 +20,7 @@ export default function Description() {
             </motion.div>
 
             <motion.img
-                src="/src/assets/pics/landingPage-pics/CoffeeImage.png"
+                src={CoffeeImage}
                 alt="Coffee"
                 className={DescriptionStyle.image}
                 initial={{ opacity: 0, x: 100, scale: 0.9 }} 
