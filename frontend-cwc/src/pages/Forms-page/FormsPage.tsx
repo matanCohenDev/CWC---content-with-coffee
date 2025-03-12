@@ -35,7 +35,7 @@ const FormsPage: React.FC = () => {
           isRegister ? "" : "hideRegister"
         }`}
       >
-        {isRegister && <RegisterForm />}
+        {isRegister && <RegisterForm setIsRegister={setIsRegister}  />}
       </div>
 
       <div className={styles.toggleBox}>
