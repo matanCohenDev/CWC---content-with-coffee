@@ -4,6 +4,8 @@ import { getAllPostsByUserId, urlProfilePic } from "../../services/apiServices";
 import PostCard from "../Feed-page/components/PostCard/PostCard";
 import { useState, useEffect } from "react";
 import EditPopup from "../../components/Edit-popup";
+import { useNavigate } from "react-router-dom";
+
 
 interface User {
   _id: string;
@@ -28,6 +30,7 @@ interface Post {
 }
 
 export default function Profile() {
+  const navigate = useNavigate();
   const location = useLocation();
   const { user: initialUser } = location.state as { user: User };
   const [userData, setUserData] = useState<User>(initialUser);
@@ -74,7 +77,11 @@ export default function Profile() {
 
   return (
     <div className={styles.profileContainer}>
+      <button className={styles.backButton} onClick={() => navigate("/feed")}>
+        &larr; Back to Feed
+      </button>
       <div className={styles.profileHeader}>
+      
         <div className={styles.profilePicContainer} onClick={() => console.log("Open upload image modal")}>
           <img
             src={urlProfilePic(userData.profile_pic)}

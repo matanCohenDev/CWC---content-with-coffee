@@ -3,8 +3,14 @@ import CoffeeGrinder from '../../../../assets/svg/CoffeeGrinder.svg';
 import CoffeeCup from '../../../../assets/svg/CoffeeCup.svg';
 import CoffeeBeans from '../../../../assets/svg/CoffeeBean.svg';
 import coffeeMachine from '../../../../assets/svg/CoffeeMachine.svg';
+import { useNavigate } from "react-router-dom";
+
 
 export default function Hero() {
+    const navigate = useNavigate();
+    const handleLoginClick = () => {
+        navigate("/login"); 
+      };
     return (
         <div className={HeroStyle.hero}>
             <div className={HeroStyle.heroContainer}>
@@ -12,7 +18,7 @@ export default function Hero() {
                 <div className={HeroStyle.heroDescription}>
                     <h1 className={HeroStyle.title}>Welcome to the CWC</h1>
                     <p className={HeroStyle.description}>A place where you can learn and share your knowledge with others.</p>
-                    <button className={HeroStyle.button}>Get Started</button>
+                    <button onClick={handleLoginClick} className={HeroStyle.button}>Get Started</button>
                 </div>
 
                 {/* צד ימין - ה-SVGs */}
