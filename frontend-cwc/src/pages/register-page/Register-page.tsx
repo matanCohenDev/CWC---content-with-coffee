@@ -12,8 +12,11 @@ type FormInputs = {
   favorite_coffee?: string;
   location?: string;
 };
+type RegisterFormProps = {
+  setIsRegister: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const RegisterForm: React.FC = () => {
+const RegisterForm: React.FC<RegisterFormProps> = ({ setIsRegister }) => {
   const {
     register,
     handleSubmit,
@@ -35,6 +38,8 @@ const RegisterForm: React.FC = () => {
       const result = await registerUser(userData);
       console.log('Registration success:', result);
       alert('Registration successful! Please log in.');
+      setIsRegister(false);
+
     } catch (error) {
       console.error('Error during registration:', error);
     }
