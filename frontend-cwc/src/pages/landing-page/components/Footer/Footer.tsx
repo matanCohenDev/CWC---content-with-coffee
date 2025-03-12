@@ -1,5 +1,6 @@
 import styles from "./Footer.module.css";
 import { FaFacebookF, FaTwitter, FaInstagram, FaPinterest, FaGoogle } from "react-icons/fa";
+import logo from "../../../../assets/pics/landingPage-pics/logo.png";
 
 export default function Footer() {
   return (
@@ -7,7 +8,7 @@ export default function Footer() {
       <div className={styles.container}>
         
         <div className={styles.footerSection}>
-          <img src="/src/assets/pics/landingPage-pics/logo.png" alt="Despina Logo" className={styles.logo} />
+          <img src={logo} alt="Despina Logo" className={styles.logo} />
           <h3 className={styles.description}>
             We have a hankering for some really good melt-in-the-mouth variety. 
             Floury is the best choice to taste food and dessert.
