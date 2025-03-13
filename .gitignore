@@ -1,3 +1,4 @@
 /node_modules
 /backend-cwc/node_modules
 /frontend-cwc/node_modules
+/backend-cwc/coverage
