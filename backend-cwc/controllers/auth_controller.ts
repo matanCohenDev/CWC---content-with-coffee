@@ -191,7 +191,8 @@ type tUser = Document & {
 };
 
 const verifyRefreshToken = (
-  refreshToken: string | undefined
+  refreshToken: string | undefined,
+  removeUsedToken: boolean = true
 ): Promise<tUser> => {
   return new Promise<tUser>(async (resolve, reject) => {
     if (!refreshToken) {
@@ -231,10 +232,13 @@ const verifyRefreshToken = (
             return;
           }
 
-          user.refreshToken = user.refreshToken.filter(
-            (token) => token !== refreshToken
-          );
-          await user.save();
+          // Only remove token if required by the flow.
+          if (removeUsedToken) {
+            user.refreshToken = user.refreshToken.filter(
+              (token) => token !== refreshToken
+            );
+            await user.save();
+          }
 
           resolve(user as unknown as tUser);
         } catch (err) {
@@ -244,7 +248,6 @@ const verifyRefreshToken = (
     );
   });
 };
-
 const logout = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
@@ -475,7 +478,9 @@ export const handleGenerateTokens: RequestHandler = (req, res, next) => {
   try {
     const { userId } = req.body;
     if (!userId) {
-      res.status(400).json({ success: false, message: "userId is required" });
+      res
+        .status(400)
+        .json({ success: false, message: "userId is required" });
       return;
     }
 
@@ -484,7 +489,9 @@ export const handleGenerateTokens: RequestHandler = (req, res, next) => {
   } catch (error: any) {
     console.error("Error in handleGenerateTokens:", error);
     if (error.message === "Token secrets not found") {
-      res.status(500).json({ success: false, message: "Token secrets not found" });
+      res
+        .status(500)
+        .json({ success: false, message: "Token secrets not found" });
       return;
     }
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -492,10 +499,12 @@ export const handleGenerateTokens: RequestHandler = (req, res, next) => {
   }
 };
 
+
 export const handleVerifyRefreshToken: RequestHandler = async (req, res, next) => {
   try {
     const { refreshToken } = req.body;
-    const user = await verifyRefreshToken(refreshToken);
+    // Do not remove token when simply verifying it
+    const user = await verifyRefreshToken(refreshToken, false);
     res.status(200).json({
       success: true,
       userId: user._id,
