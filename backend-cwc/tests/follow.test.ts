@@ -1,8 +1,10 @@
 import request from "supertest";
 import app, { connectDB } from "../server";
+import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
+
 import User, { UserInterface } from "../models/user_model";
 import Follow from "../models/follow_model";
-import mongoose from "mongoose";
 
 interface ExtendedUser extends UserInterface {
   accessToken?: string;
@@ -19,14 +21,23 @@ let user2: ExtendedUser = {
   password: "password2",
 };
 
+let mongoServer: MongoMemoryServer;
+
 beforeAll(async () => {
+  jest.setTimeout(30000);
+
   console.log("Starting Follow tests...");
+
+  mongoServer = await MongoMemoryServer.create();
+  process.env.MONGO_URI = mongoServer.getUri();
   await connectDB();
+
   await User.deleteMany();
   await Follow.deleteMany();
 
   let res = await request(app).post("/api/auth/register").send(user1);
   expect(res.status).toBe(201);
+
   res = await request(app).post("/api/auth/login").send(user1);
   expect(res.status).toBe(200);
   expect(res.body.accessToken).toBeDefined();
@@ -35,6 +46,7 @@ beforeAll(async () => {
 
   res = await request(app).post("/api/auth/register").send(user2);
   expect(res.status).toBe(201);
+
   res = await request(app).post("/api/auth/login").send(user2);
   expect(res.status).toBe(200);
   expect(res.body.accessToken).toBeDefined();
@@ -46,13 +58,19 @@ afterAll(async () => {
   console.log("Closing Follow tests...");
   await User.deleteMany();
   await Follow.deleteMany();
+
   await mongoose.connection.close();
+  if (mongoServer) {
+    await mongoServer.stop();
+  }
 });
 
 const baseUrl = "/api/follow";
 
 describe("Follow Endpoints", () => {
   test("User1 successfully follows User2", async () => {
+    await Follow.deleteMany({ followerId: user1._id, followingId: user2._id });
+
     const res = await request(app)
       .post(baseUrl + "/follow")
       .set("Authorization", `Bearer ${user1.accessToken}`)
@@ -68,6 +86,48 @@ describe("Follow Endpoints", () => {
       .send({ followingId: user2._id });
     expect(res.status).toBe(400);
     expect(res.body).toHaveProperty("message", "Already following");
+  });
+
+  test("Follow endpoint fails with missing followingId", async () => {
+    const res = await request(app)
+      .post(baseUrl + "/follow")
+      .set("Authorization", `Bearer ${user1.accessToken}`)
+      .send({ followingId: "" });
+    expect(res.status).toBe(400);
+  });
+
+  test("Follow endpoint fails without authentication", async () => {
+    const res = await request(app)
+      .post(baseUrl + "/follow")
+      .send({ followingId: user2._id });
+    expect(res.status).toBe(401);
+  });
+
+  test("Simulate error during follow (during Follow.prototype.save)", async () => {
+    await Follow.deleteMany({ followerId: user1._id, followingId: user2._id });
+
+    const originalSave = Follow.prototype.save;
+    Follow.prototype.save = jest.fn().mockImplementationOnce(() => {
+      throw new Error("Simulated save error");
+    });
+
+    const res = await request(app)
+      .post(baseUrl + "/follow")
+      .set("Authorization", `Bearer ${user1.accessToken}`)
+      .send({ followingId: user2._id });
+    expect(res.status).toBe(500);
+
+    Follow.prototype.save = originalSave;
+  });
+
+  
+  test("Re-follow User2 after simulation error", async () => {
+    await Follow.deleteMany({ followerId: user1._id, followingId: user2._id });
+    const res = await request(app)
+      .post(baseUrl + "/follow")
+      .set("Authorization", `Bearer ${user1.accessToken}`)
+      .send({ followingId: user2._id });
+    expect(res.status).toBe(200);
   });
 
   test("Get all followers for User2", async () => {
@@ -89,7 +149,28 @@ describe("Follow Endpoints", () => {
     expect(followingIds).toContain(user2._id);
   });
 
+  test("Simulate error when incrementing user counters", async () => {
+    
+    await Follow.deleteMany({ followerId: user1._id, followingId: user2._id });
+
+    const originalUserSave = User.prototype.save;
+    User.prototype.save = jest.fn().mockImplementationOnce(() => {
+      throw new Error("Simulated error in user.save");
+    });
+
+    const res = await request(app)
+      .post(baseUrl + "/follow")
+      .set("Authorization", `Bearer ${user1.accessToken}`)
+      .send({ followingId: user2._id });
+    expect(res.status).toBe(500);
+
+    User.prototype.save = originalUserSave;
+  });
+
   test("User1 successfully unfollows User2", async () => {
+    await Follow.deleteMany({ followerId: user1._id, followingId: user2._id });
+    await Follow.create({ followerId: user1._id, followingId: user2._id });
+
     const res = await request(app)
       .post(baseUrl + "/unfollow")
       .set("Authorization", `Bearer ${user1.accessToken}`)
@@ -123,18 +204,48 @@ describe("Follow Endpoints", () => {
     expect(res.body.following.length).toBe(0);
   });
 
-  test("Follow endpoint fails with missing followingId", async () => {
+  test("Unfollow endpoint fails without authentication", async () => {
     const res = await request(app)
-      .post(baseUrl + "/follow")
-      .set("Authorization", `Bearer ${user1.accessToken}`)
-      .send({ followingId: "" });
-    expect(res.status).toBe(400);
-  });
-
-  test("Follow endpoint fails without authentication", async () => {
-    const res = await request(app)
-      .post(baseUrl + "/follow")
+      .post(baseUrl + "/unfollow")
       .send({ followingId: user2._id });
     expect(res.status).toBe(401);
+  });
+
+  test("Simulate error during unfollow when retrieving followingUser", async () => {
+    await Follow.deleteMany({ followerId: user1._id, followingId: user2._id });
+    await Follow.create({ followerId: user1._id, followingId: user2._id });
+
+    const originalFindById = User.findById;
+    User.findById = jest.fn().mockImplementationOnce(() => {
+      throw new Error("Simulated error in findById");
+    });
+
+    const res = await request(app)
+      .post(baseUrl + "/unfollow")
+      .set("Authorization", `Bearer ${user1.accessToken}`)
+      .send({ followingId: user2._id });
+    expect(res.status).toBe(500);
+
+    User.findById = originalFindById;
+  });
+
+  test("getAllFollowersByUserId returns 500 if Follow.find throws error", async () => {
+    const originalFind = Follow.find;
+    Follow.find = jest.fn().mockImplementationOnce(() => {
+      throw new Error("Simulated error");
+    });
+    const res = await request(app).get(baseUrl + `/followers/${user2._id}`);
+    expect(res.status).toBe(500);
+    Follow.find = originalFind;
+  });
+
+  test("getAllFollowingByUserId returns 500 if Follow.find throws error", async () => {
+    const originalFind = Follow.find;
+    Follow.find = jest.fn().mockImplementationOnce(() => {
+      throw new Error("Simulated error");
+    });
+    const res = await request(app).get(baseUrl + `/following/${user1._id}`);
+    expect(res.status).toBe(500);
+    Follow.find = originalFind;
   });
 });

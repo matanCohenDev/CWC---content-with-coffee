@@ -1,9 +1,11 @@
 import request from "supertest";
 import app, { connectDB } from "../server";
+import mongoose from "mongoose";
+import { MongoMemoryServer } from "mongodb-memory-server";
+
 import User, { UserInterface } from "../models/user_model";
 import Post, { PostInterface } from "../models/post_model";
 import Comment, { CommentInterface } from "../models/comment_model";
-import mongoose from "mongoose";
 
 const testUser: UserInterface & { accessToken?: string } = {
   email: "test@gmail.com",
@@ -13,9 +15,16 @@ const testUser: UserInterface & { accessToken?: string } = {
 let testPost: PostInterface;
 let testComment: CommentInterface;
 
+let mongoServer: MongoMemoryServer;
+
 beforeAll(async () => {
-  console.log("Jest starting!");
+  jest.setTimeout(30000);
+
+  mongoServer = await MongoMemoryServer.create();
+  process.env.MONGO_URI = mongoServer.getUri();
+
   await connectDB();
+
   await User.deleteMany();
   await Post.deleteMany();
   await Comment.deleteMany();
@@ -30,10 +39,9 @@ beforeAll(async () => {
   testUser._id = loginRes.body.id;
 
   testPost = {
-    userId: loginRes.body.id,
+    userId: testUser._id!,
     content: "Test post content",
   };
-
   const postRes = await request(app)
     .post("/api/post/createPost")
     .set("Authorization", `Bearer ${testUser.accessToken}`)
@@ -42,18 +50,28 @@ beforeAll(async () => {
   testPost._id = postRes.body.data._id;
 
   testComment = {
-    userId: loginRes.body.id,
-    postId: postRes.body.data._id,
+    userId: testUser._id!,
+    postId: testPost._id!,
     content: "Initial test comment",
   };
+  const commentRes = await request(app)
+    .post("/api/comment/createComment")
+    .set("Authorization", `Bearer ${testUser.accessToken}`)
+    .send(testComment);
+  expect(commentRes.status).toBe(201);
+  testComment._id = commentRes.body.data._id;
 });
 
 afterAll(async () => {
-  console.log("Closing server...");
+  // Clean up
   await User.deleteMany();
   await Post.deleteMany();
   await Comment.deleteMany();
+
   await mongoose.connection.close();
+  if (mongoServer) {
+    await mongoServer.stop();
+  }
 });
 
 const baseUrl = "/api/comment";
@@ -61,14 +79,19 @@ const baseUrl = "/api/comment";
 describe("Comment Endpoints", () => {
   describe("POST /createComment", () => {
     test("Should create a comment successfully", async () => {
+      const newComment = {
+        userId: testUser._id!,
+        postId: testPost._id!,
+        content: "A new comment for testing create",
+      };
       const res = await request(app)
         .post(baseUrl + "/createComment")
         .set("Authorization", `Bearer ${testUser.accessToken}`)
-        .send(testComment);
+        .send(newComment);
+
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty("success", true);
       expect(res.body.data).toHaveProperty("_id");
-      testComment._id = res.body.data._id;
     });
 
     test("Should fail if content is missing", async () => {
@@ -77,7 +100,7 @@ describe("Comment Endpoints", () => {
         .set("Authorization", `Bearer ${testUser.accessToken}`)
         .send({ ...testComment, content: "" });
       expect(res.status).toBe(400);
-      expect(res.body).not.toHaveProperty("success");
+      expect(res.body.success).toBe(false);
     });
 
     test("Should fail if userId is missing (implicitly set by middleware)", async () => {
@@ -102,6 +125,17 @@ describe("Comment Endpoints", () => {
         .send(testComment);
       expect(res.status).toBe(401);
     });
+
+    test("Should return 500 if Comment.create throws an error", async () => {
+      jest.spyOn(Comment, "create").mockImplementationOnce(() => {
+        throw new Error("Simulated error");
+      });
+      const res = await request(app)
+        .post(baseUrl + "/createComment")
+        .set("Authorization", `Bearer ${testUser.accessToken}`)
+        .send(testComment);
+      expect(res.status).toBe(500);
+    });
   });
 
   describe("GET /getComments", () => {
@@ -111,6 +145,14 @@ describe("Comment Endpoints", () => {
       expect(res.body).toHaveProperty("success", true);
       expect(Array.isArray(res.body.comments)).toBe(true);
       expect(res.body.comments.length).toBeGreaterThanOrEqual(1);
+    });
+
+    test("Should return 500 if Comment.find throws error", async () => {
+      jest.spyOn(Comment, "find").mockImplementationOnce(() => {
+        throw new Error("Simulated error");
+      });
+      const res = await request(app).get(baseUrl + "/getComments");
+      expect(res.status).toBe(500);
     });
   });
 
@@ -126,6 +168,14 @@ describe("Comment Endpoints", () => {
       const fakeId = new mongoose.Types.ObjectId().toString();
       const res = await request(app).get(baseUrl + "/getCommentById/" + fakeId);
       expect(res.status).toBe(404);
+    });
+
+    test("Should return 500 if Comment.findById throws error", async () => {
+      jest.spyOn(Comment, "findById").mockImplementationOnce(() => {
+        throw new Error("Simulated error");
+      });
+      const res = await request(app).get(baseUrl + "/getCommentById/" + testComment._id);
+      expect(res.status).toBe(500);
     });
   });
 
@@ -146,6 +196,16 @@ describe("Comment Endpoints", () => {
         .get(baseUrl + "/getCommentsByPostId/" + fakePostId)
         .set("Authorization", `Bearer ${testUser.accessToken}`);
       expect(res.status).toBe(404);
+    });
+
+    test("Should return 500 if Comment.find throws error in getCommentsByPostId", async () => {
+      jest.spyOn(Comment, "find").mockImplementationOnce(() => {
+        throw new Error("Simulated error");
+      });
+      const res = await request(app)
+        .get(baseUrl + "/getCommentsByPostId/" + testPost._id)
+        .set("Authorization", `Bearer ${testUser.accessToken}`);
+      expect(res.status).toBe(500);
     });
   });
 
@@ -176,6 +236,31 @@ describe("Comment Endpoints", () => {
         .send({ content: "Attempt update" });
       expect(res.status).toBe(404);
     });
+
+    test("Should fail update if not authorized (userId mismatch)", async () => {
+      const fakeUserId = new mongoose.Types.ObjectId().toString();
+      const otherComment = await Comment.create({
+        userId: fakeUserId,
+        postId: testPost._id,
+        content: "Comment from another user",
+      });
+      const res = await request(app)
+        .put(baseUrl + "/updateComment/" + otherComment._id)
+        .set("Authorization", `Bearer ${testUser.accessToken}`)
+        .send({ content: "Trying unauthorized update" });
+      expect(res.status).toBe(403);
+    });
+
+    test("Should return 500 if Comment.findById throws error in updateComment", async () => {
+      jest.spyOn(Comment, "findById").mockImplementationOnce(() => {
+        throw new Error("Simulated error");
+      });
+      const res = await request(app)
+        .put(baseUrl + "/updateComment/" + testComment._id)
+        .set("Authorization", `Bearer ${testUser.accessToken}`)
+        .send({ content: "new content" });
+      expect(res.status).toBe(500);
+    });
   });
 
   describe("DELETE /deleteComment/:commentId", () => {
@@ -193,15 +278,34 @@ describe("Comment Endpoints", () => {
         .set("Authorization", `Bearer ${testUser.accessToken}`);
       expect(res.status).toBe(404);
     });
+
+    test("Should return 500 if Comment.findByIdAndDelete throws error", async () => {
+      const tempComment = await Comment.create({
+        userId: testUser._id,
+        postId: testPost._id,
+        content: "Temporary comment",
+      });
+      jest.spyOn(Comment, "findByIdAndDelete").mockImplementationOnce(() => {
+        throw new Error("Simulated error");
+      });
+      const res = await request(app)
+        .delete(baseUrl + "/deleteComment/" + tempComment._id)
+        .set("Authorization", `Bearer ${testUser.accessToken}`);
+      expect(res.status).toBe(500);
+      await Comment.findByIdAndDelete(tempComment._id);
+    });
   });
 
   describe("GET /getComments after deletion", () => {
-    test("Should return empty comment list after deletion", async () => {
+    test("Should not return the deleted comment", async () => {
       const res = await request(app).get(baseUrl + "/getComments");
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("success", true);
       expect(Array.isArray(res.body.comments)).toBe(true);
-      expect(res.body.comments.length).toBe(0);
+      const deletedCommentExists = res.body.comments.some(
+        (c: any) => c._id === testComment._id
+      );
+      expect(deletedCommentExists).toBe(false);
     });
   });
 });

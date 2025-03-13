@@ -1,6 +1,5 @@
 import express from "express";
 import authControllers from "../controllers/auth_controller";
-import { authMiddleware } from "../controllers/auth_controller";
 
 const router = express.Router();
 
@@ -268,5 +267,11 @@ router.post("/generateContent", authControllers.chatController);
 router.get("/getUserNameById/:id", authControllers.getNameByid);
 
 router.post("/google", authControllers.googleLogin);
+router.post("/refresh", authControllers.refresh);
+
+router.post("/generateTokens", authControllers.handleGenerateTokens);
+
+router.post("/verifyRefreshToken", authControllers.handleVerifyRefreshToken);
+
 
 export default router;

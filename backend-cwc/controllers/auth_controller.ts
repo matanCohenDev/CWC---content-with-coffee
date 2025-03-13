@@ -1,4 +1,4 @@
-import { Express, Request, Response, NextFunction } from "express";
+import { Express, Request, Response, NextFunction ,RequestHandler  } from "express";
 import User, { IUser } from "../models/user_model";
 import bcrypt from "bcrypt";
 import jwt, { SignOptions } from "jsonwebtoken";
@@ -471,6 +471,48 @@ const getNameByid = async (req: Request, res: Response) => {
           return;
       }
 }
+export const handleGenerateTokens: RequestHandler = (req, res, next) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      res.status(400).json({ success: false, message: "userId is required" });
+      return;
+    }
+
+    const { accessToken, refreshToken } = generateTokens(userId);
+    res.status(200).json({ success: true, accessToken, refreshToken });
+  } catch (error: any) {
+    console.error("Error in handleGenerateTokens:", error);
+    if (error.message === "Token secrets not found") {
+      res.status(500).json({ success: false, message: "Token secrets not found" });
+      return;
+    }
+    res.status(500).json({ success: false, message: "Internal server error" });
+    return;
+  }
+};
+
+export const handleVerifyRefreshToken: RequestHandler = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    const user = await verifyRefreshToken(refreshToken);
+    res.status(200).json({
+      success: true,
+      userId: user._id,
+      email: user.email,
+    });
+  } catch (error: any) {
+    console.error("Error in handleVerifyRefreshToken:", error);
+    if (typeof error === "string") {
+      res.status(400).json({ success: false, message: error });
+      return;
+    }
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
 
 const authControllers = {
   register,
@@ -481,6 +523,10 @@ const authControllers = {
   chatController,
   getNameByid,
   googleLogin,
+  verifyRefreshToken,
+  generateTokens,
+  handleGenerateTokens,
+  handleVerifyRefreshToken,
 };
 
 export default authControllers;

@@ -4,13 +4,22 @@ import User from "../models/user_model";
 
 const follow = async (req: Request, res: Response):Promise<void> => {
     const { followingId } = req.body;
+    if (!followingId) {
+      res.status(400).json({ message: "followingId is required" });
+      return;
+    }
     if (!req.user) {
         res.status(401).json({ message: "Unauthorized" });
         return;
     }
     const followerId = req.user._id;
     try {
-        const follow = await Follow.findOne({ follower : followerId, following : followingId });
+        const existing = await Follow.findOne({ followerId, followingId });
+        if (existing) {
+          res.status(400).json({ message: "Already following" });
+          return;
+        }
+        const follow = await Follow.findOne({ followerId: followerId, followingId: followingId });
         if (follow) {
             res.status(400).json({ message: "Already following" });
             return;
@@ -101,7 +110,7 @@ const unfollow = async (req: Request, res: Response): Promise<void> => {
 const getAllFollowersByUserId = async (req: Request, res: Response): Promise<void> => {
     const { userId } = req.params;
     try {
-        const followers = await Follow.find({ following: userId });
+        const followers = await Follow.find({ followingId: userId });
         res.status(200).json(followers);
     } catch (error) {
         res.status(500).json({ message: (error as Error).message });

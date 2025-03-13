@@ -50,7 +50,7 @@ const getCommentsByPostId = async (req: Request, res: Response) => {
     try {
         const postId = req.params.postId;
         const comments = await Comment.find({postId});
-        if (!comments) {
+        if (!comments || comments.length === 0) {
             res.status(404).json({ message: "No comments found" });
             return;
         }
