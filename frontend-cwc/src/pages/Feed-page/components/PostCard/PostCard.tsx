@@ -97,6 +97,7 @@ export default function PostCard({ post, variant = "small", profileId = "other" 
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
         await deletePost(postId);
+        window.location.reload();
         alert("Post deleted successfully");
       } catch (error) {
         console.error("Error deleting post:", error);
