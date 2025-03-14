@@ -8,6 +8,7 @@
     max-width: 1200px;
     margin: auto;
     margin-top:3%;
+    max-height: 650px;
 }
 
 .textContainer {
@@ -79,6 +80,7 @@
 
     .image {
         max-width: 80%;
+        
     }
 }
 
@@ -93,5 +95,6 @@
 
     .image {
         max-width: 90%;
+        max-height: 40%;
     }
 }
