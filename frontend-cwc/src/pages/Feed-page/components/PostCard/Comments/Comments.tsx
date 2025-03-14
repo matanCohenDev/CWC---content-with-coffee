@@ -76,15 +76,16 @@ export default function Comments({ postId, onClose }: CommentsProps) {
   const handleAddComment = async () => {
     if (newComment.trim()) {
       try {
-        const response = await createComment(postId, newComment);
-        console.log("New comment response:", response);
-        setComments([response.data, ...comments]);
+        await createComment(postId, newComment);
+        const commentsData = await getCommentsByPostId(postId);
+        setComments(commentsData);
         setNewComment("");
       } catch (error) {
         console.error("Error adding comment:", error);
       }
     }
   };
+  
 
   const handleRemoveComment = async (commentId: string) => {
     try {

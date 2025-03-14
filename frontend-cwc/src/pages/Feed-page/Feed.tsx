@@ -44,30 +44,33 @@ const Feed: React.FC = () => {
   };
 
   return (
-    <div className={styles.feedContainer}>
-      <DecorativeSvgs />
-      <div>
-        <img src={logo} alt="logo" className={styles.logo} />
-      </div>
-      <div className={styles.header}>
-        <button
-          className={styles.messageButton}
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        >
-          <Send size={24} />
-        </button>
+    <div className={styles.feedWrapper}>
+      <header className={styles.headerContainer}>
+        <div>
+          <img src={logo} alt="logo" className={styles.logo} />
+        </div>
+        <div className={styles.header}>
+          <button
+            className={styles.messageButton}
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            <Send size={24} />
+          </button>
+        </div>
+      </header>
+
+      <div className={styles.feedContainer}>
+        <DecorativeSvgs />
+        <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <div className={styles.postsContainer}>
+          {posts.slice().reverse().map((post) => (
+            <PostCard key={post._id} post={post} />
+          ))}
+        </div>
+        <BottomBar onPostCreated={loadPosts} />
+        <CoffeeSmartChat />
       </div>
 
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-
-      <div className={styles.postsContainer}>
-        {posts.slice().reverse().map((post) => (
-          <PostCard key={post._id} post={post} />
-        ))}
-      </div>
-
-      <BottomBar onPostCreated={loadPosts} />
-      <CoffeeSmartChat />
       <button className={styles.logoutButton} onClick={handleLogout}>
         התנתקות
       </button>
