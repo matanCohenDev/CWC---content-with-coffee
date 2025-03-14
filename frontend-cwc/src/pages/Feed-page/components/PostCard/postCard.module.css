@@ -93,6 +93,7 @@
 @media (max-width: 600px) {
     .postCard {
         padding: 14px;
+        max-width: 90%;
     }
 
     .username {

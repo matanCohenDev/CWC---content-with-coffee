@@ -1,8 +1,29 @@
+.feedWrapper {
+  position: relative;
+}
+
+.headerContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-height: 120px;
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 30px;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  width: 150px;
+  height: 150px;
+}
+
 .header {
-  position: absolute;
-  right: 30px;
-  top: 30px;
-  background-color: #6F4E37; 
+  background-color: #6F4E37;
   padding: 10px;
   border-radius: 50%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
@@ -17,7 +38,7 @@
 .messageButton {
   background: none;
   border: none;
-  color: #EDE0D4; 
+  color: #EDE0D4;
   font-size: 24px;
   cursor: pointer;
   display: flex;
@@ -25,17 +46,15 @@
   justify-content: center;
 }
 
-.logo{
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 150px;
-  height: 150px;
+.feedContainer {
+  padding-top: 110px; 
+  position: relative;
 }
+
 .logoutButton {
-  position: absolute;
+  position: fixed;
   bottom: 30px;
-  left: 30px; 
+  left: 30px;
   background-color: #6F4E37;
   color: #EDE0D4;
   border: none;
@@ -50,4 +69,16 @@
 .logoutButton:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+@media screen and (max-width: 768px) {
+  .headerContainer {
+    padding: 10px 20px;
+  }
+  .logoutButton {
+    bottom: 3.5rem;
+    left: 10px;
+    width: 100px;
+    height: 37px;
+  }
 }
