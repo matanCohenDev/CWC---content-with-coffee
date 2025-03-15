@@ -4,12 +4,19 @@ import CoffeeCup from '../../../../assets/svg/CoffeeCup.svg';
 import CoffeeBeans from '../../../../assets/svg/CoffeeBean.svg';
 import coffeeMachine from '../../../../assets/svg/CoffeeMachine.svg';
 import { useNavigate } from "react-router-dom";
+import { useUser } from '../../../../context/UserContext';
 
 export default function Hero() {
   const navigate = useNavigate();
+  const { user, token } = useUser();
+
 
   const handleLoginClick = () => {
-    navigate("/login"); 
+    if (user && token) {
+      navigate("/feed");
+    } else {
+      navigate("/login");
+    }
   };
 
   return (

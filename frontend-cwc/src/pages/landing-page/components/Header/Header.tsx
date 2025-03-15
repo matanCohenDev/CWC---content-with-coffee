@@ -2,14 +2,18 @@
 import { useNavigate } from "react-router-dom";
 import HeaderStyle from "./Header.module.css";
 import logo from "../../../../assets/pics/landingPage-pics/logo.png";
+import { useUser } from "../../../../context/UserContext";
 
 export default function Header() {
   const navigate = useNavigate();
-
+  const { user, token } = useUser();
   const handleLoginClick = () => {
-    navigate("/login");
+    if (user && token) {
+      navigate("/feed");
+    } else {
+      navigate("/login");
+    }
   };
-
   return (
     <header className={HeaderStyle.header}>
       <div className={HeaderStyle.container}>

@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "cd backend-cwc && npm i && shx cp .env_dev .env && npx ts-node app.ts",
-    "server_prod": "cd backend-cwc  && cp .env_prod .env && NODE_ENV=production npx ts-node app.ts",
+    "server_prod": "cd backend-cwc && cp .env_prod .env && NODE_ENV=production npx ts-node app.ts",
     "client": "cd frontend-cwc && shx cp .env_dev .env && npm i && npm run dev",
     "client_prod": "cd frontend-cwc && cp .env_prod .env && npm i && npm run build",
     "dev": "npm i && concurrently \"npm run server\" \"npm run client\"",
