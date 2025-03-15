@@ -134,7 +134,7 @@ const swaggerOptions = {
           version: "1.0.0",
           description: "User authentication API"
       },
-      servers: [{ url: "http://localhost:3000" }]
+      servers: [{ url: process.env.BASE_URL }]
   },
   apis: ["./routes/*.ts"]
 };
