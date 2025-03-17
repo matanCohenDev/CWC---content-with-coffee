@@ -1,16 +1,18 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send } from 'lucide-react';
 import styles from './chatbot.module.css';
-import {generateContent} from "../../../../services/apiServices";
+import { generateContent } from "../../../../services/apiServices";
 
 export default function CoffeeSmartChat() {
-
   const [isOpen, setIsOpen] = useState(false);
   const [userMessage, setUserMessage] = useState('');
   const [messages, setMessages] = useState([
     { sender: 'bot', text: 'שלום! אני צ׳אט בוט קפה חכם, איך אוכל לעזור?' },
   ]);
+
+  // Create a ref for the messages container
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
@@ -19,17 +21,33 @@ export default function CoffeeSmartChat() {
   const handleSendMessage = async () => {
     if (!userMessage) return;
     
-    setMessages((prevMessages) => [...prevMessages, { sender: 'user', text: userMessage }]);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { sender: 'user', text: userMessage },
+    ]);
     setUserMessage('');
-  
+
     try {
       const response = await generateContent(userMessage);
-      setMessages((prevMessages) => [...prevMessages, { sender: 'bot', text: response.response }]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: 'bot', text: response.response },
+      ]);
     } catch (error) {
       console.error(error);
-      setMessages((prevMessages) => [...prevMessages, { sender: 'bot', text: 'אופס, ישנה בעיה בטעינת התוכן' }]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: 'bot', text: 'אופס, ישנה בעיה בטעינת התוכן' },
+      ]);
     }
   };
+
+  // Scroll to the bottom whenever messages change
+  useEffect(() => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   return (
     <div className={styles.chatContainer}>
@@ -50,14 +68,11 @@ export default function CoffeeSmartChat() {
             <div className={styles.chatCardContent}>
               <div className={styles.chatHeader}>
                 <div className={styles.chatTitle}>צ׳אט קפה חכם</div>
-                <button
-                  className={styles.closeButton}
-                  onClick={handleToggle}
-                >
+                <button className={styles.closeButton} onClick={handleToggle}>
                   סגור
                 </button>
               </div>
-              <div className={styles.messagesContainer}>
+              <div className={styles.messagesContainer} ref={messagesContainerRef}>
                 {messages.map((msg, index) => (
                   <div
                     key={index}

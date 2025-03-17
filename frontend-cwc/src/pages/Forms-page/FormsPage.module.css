@@ -25,7 +25,9 @@
   align-items: center;
   justify-content: center;
   background: linear-gradient(90deg, var(--light-bg), var(--medium-bg));
+  
 }
+
 
 
 .container {

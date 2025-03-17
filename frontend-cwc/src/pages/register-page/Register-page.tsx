@@ -46,6 +46,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsRegister }) => {
   };
 
   return (
+    <div className={styles.scrollableFormWrapper }>
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <h1>Registration</h1>
 
@@ -142,6 +143,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ setIsRegister }) => {
         Register
       </button>
     </form>
+    </div>
   );
 };
 
