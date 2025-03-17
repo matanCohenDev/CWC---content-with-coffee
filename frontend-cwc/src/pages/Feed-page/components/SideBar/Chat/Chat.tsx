@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "./chat.module.css";
 import { Send, X } from "lucide-react";
-import  { type Socket } from "socket.io-client";
-import { getUserIdFromToken, getMessagesBetweenUsers,getSocket } from "../../../../../services/apiServices";
+import { type Socket } from "socket.io-client";
+import { getUserIdFromToken, getMessagesBetweenUsers, getSocket } from "../../../../../services/apiServices";
 
 export interface Message {
   _id: string;
@@ -23,7 +23,32 @@ export default function Chat(props: ChatProps) {
   const [input, setInput] = useState("");
   const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
   const messageContainerRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<typeof Socket | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (chatContainerRef.current && !chatContainerRef.current.contains(event.target as Node)) {
+        props.onclose();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [props]);
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        props.onclose();
+      }
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [props]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -35,18 +60,17 @@ export default function Chat(props: ChatProps) {
         console.error("Error fetching messages:", error);
       }
     };
-    
+
     fetchMessages();
     if (!socketRef.current) {
-      socketRef.current = getSocket(); 
+      socketRef.current = getSocket();
     }
-  
+
     socketRef.current?.on("message", (data: Message) => {
       setMessages((prev) => [...prev, data]);
     });
-  
+
     return () => {
-     
       socketRef.current?.off("message");
     };
   }, [userId, props._id]);
@@ -69,8 +93,15 @@ export default function Chat(props: ChatProps) {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
-    <div className={styles.chatContainer}>
+    <div className={styles.chatContainer} ref={chatContainerRef}>
       <button className={styles.closeButton} onClick={props.onclose}>
         <X size={24} />
       </button>
@@ -79,8 +110,11 @@ export default function Chat(props: ChatProps) {
       </div>
       <div className={styles.messageContainer} ref={messageContainerRef}>
         {messages.length > 0 ? (
-          messages.map(msg => (
-            <div key={msg._id} className={`${styles.message} ${msg.senderId === userId ? styles.sent : styles.received}`}>
+          messages.map((msg) => (
+            <div
+              key={msg._id}
+              className={`${styles.message} ${msg.senderId === userId ? styles.sent : styles.received}`}
+            >
               {msg.content}
             </div>
           ))
@@ -89,7 +123,14 @@ export default function Chat(props: ChatProps) {
         )}
       </div>
       <div className={styles.inputContainer}>
-        <input type="text" placeholder="Type your message..." value={input} onChange={e => setInput(e.target.value)} className={styles.inputField} />
+        <input
+          type="text"
+          placeholder="Type your message..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className={styles.inputField}
+        />
         <button onClick={handleSend} className={styles.sendButton}>
           <Send size={20} />
         </button>

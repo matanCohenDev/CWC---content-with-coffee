@@ -104,32 +104,41 @@ const updatePostById = async (req: Request, res: Response) => {
     }
 };
 
-
+const fs = require('fs');
+const path = require('path');
 
 const deletePostById = async (req: Request, res: Response) => {
     try {
-        const postId = req.params.postId;
-        const userId = req.user?._id;
-
-        const post = await Post.findById(postId);
-        if (!post) {
-            res.status(404).json({ success: false, message: "Post not found" });
-            return;
+      const postId = req.params.postId;
+      const userId = req.user?._id;
+  
+      const post = await Post.findById(postId);
+      if (!post) {
+         res.status(404).json({ success: false, message: "Post not found" });
+        return;
+      }
+  
+      if (post.userId !== userId) {
+         res.status(403).json({ success: false, message: "Unauthorized to delete this post" });
+        return;
+      }
+  
+      if (post.image) {
+        const imagePath = path.join(__dirname, '../uploads/posts/', post.image);
+        try {
+          await fs.promises.unlink(imagePath);
+        } catch (err) {
+          console.error("Error deleting image file:", err);
         }
-
-        if (post.userId !== userId) {
-            res.status(403).json({ success: false, message: "Unauthorized to delete this post" });
-            return;
-        }
-
-        await post.deleteOne();
-        res.status(200).json({ success: true });
+      }
+  
+      await post.deleteOne();
+      res.status(200).json({ success: true });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: "Internal server error" });
+      console.error("Error in deletePostById:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
     }
-};
-
+  };
 const updateLikeToPost = async (req: Request, res: Response) => {
     try {
         const postId = req.params.postId;
