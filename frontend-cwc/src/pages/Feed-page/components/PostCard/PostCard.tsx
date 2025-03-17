@@ -1,5 +1,5 @@
 import postCardStyles from "./postCard.module.css";
-import Comments from "./Comments/Comments"; // Adjust the path as needed
+import Comments from "./Comments/Comments";
 import { Delete, Edit, Heart, MessageSquare } from "lucide-react";
 import EditPost from "./EditPost/EditPost";
 import { 
@@ -8,8 +8,9 @@ import {
   likePost, 
   removeLike, 
   checkIfUserAlreadyLiked, 
-  getUserIdFromToken , 
-  deletePost
+  getUserIdFromToken, 
+  deletePost ,
+  getCommentsByPostId
 } from "../../../../services/apiServices";
 import { useEffect, useState } from "react";
 
@@ -34,6 +35,7 @@ export default function PostCard({ post, variant = "small", profileId = "other" 
   const [likeId, setLikeId] = useState<string>('');
   const [showComments, setShowComments] = useState<boolean>(false);
   const [showEditPost, setShowEditPost] = useState<boolean>(false);
+  const [postData, setPostData] = useState<Post>(post);
   const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
 
   useEffect(() => {
@@ -64,89 +66,122 @@ export default function PostCard({ post, variant = "small", profileId = "other" 
     });
   }, [post.userId]);
 
-  const onhandleClickLike = () => {
-    likePost(post._id).then((response) => {
-      post.likesCount += 1;
+  const onhandleClickLike = async () => {
+    try {
+      const response = await likePost(post._id);
+      setPostData(prev => ({
+        ...prev,
+        likesCount: prev.likesCount + 1
+      }));
       setLiked(true);
       setLikeId(response.data._id);
-    });
-  };
-
-  const onhandleClickRemoveLike = () => {
-    removeLike(likeId, post._id).then(() => {
-      post.likesCount -= 1;
-      setLiked(false);
-    });
-  };
-
-  const onClickDelete = (postId: string) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
-      deletePost(postId).then(() => {
-        alert("Post deleted successfully");
-        window.location.reload();
-      });
+    } catch (error) {
+      console.error("Error liking post:", error);
     }
-  }
+  };
+
+  const onhandleClickRemoveLike = async () => {
+    try {
+      await removeLike(likeId, post._id);
+      setPostData(prev => ({
+        ...prev,
+        likesCount: prev.likesCount - 1
+      }));
+      setLiked(false);
+    } catch (error) {
+      console.error("Error removing like:", error);
+    }
+  };
+
+  const onClickDelete = async (postId: string) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        await deletePost(postId);
+        window.location.reload();
+        alert("Post deleted successfully");
+      } catch (error) {
+        console.error("Error deleting post:", error);
+      }
+    }
+  };
+
+  const handleCommentsClose = async () => {
+    setShowComments(false);
+    try {
+      const commentsData = await getCommentsByPostId(postData._id);
+      setPostData(prev => ({
+        ...prev,
+        commentsCount: commentsData.length,
+      }));
+    } catch (error) {
+      console.error("Error updating comments count:", error);
+    }
+  };
+  
 
   return (
     <>
       <div className={`${postCardStyles.postCard} ${variant === "large" ? postCardStyles.large : postCardStyles.small}`}>
         <div className={postCardStyles.header}>
           <span className={postCardStyles.username}>{username}</span>
-          {variant === "large" && profileId == "profile" && (
+          {variant === "large" && profileId === "profile" && (
             <div className={postCardStyles.actions}>
-            <button 
-              className={postCardStyles.button}
-              onClick={() => setShowEditPost(true)}>
-              <Edit size={20} />
-            </button>
-            <button 
-            className={postCardStyles.button}
-            onClick={() => onClickDelete(post._id)}>
-            <Delete size={20} />
-          </button>
-          </div>
+              <button 
+                className={postCardStyles.button}
+                onClick={() => setShowEditPost(true)}>
+                <Edit size={20} />
+              </button>
+              <button 
+                className={postCardStyles.button}
+                onClick={() => onClickDelete(postData._id)}>
+                <Delete size={20} />
+              </button>
+            </div>
           )}
         </div>
 
         <div className={postCardStyles.postImage}>
           <img 
-            src={urlImage(post.image)}
+            src={urlImage(postData.image)}
             alt="Post" 
             className={postCardStyles.image} 
           />
         </div>
 
-        <p className={postCardStyles.body}>{post.content}</p>
+        <p className={postCardStyles.body}>{postData.content}</p>
 
         <div className={postCardStyles.actions}>
           <button 
             className={postCardStyles.button} 
             onClick={liked ? onhandleClickRemoveLike : onhandleClickLike}>
-            <Heart size={20} color={liked ? "red" : "black"} /> {post.likesCount} 
+            <Heart size={20} color={liked ? "red" : "black"} /> {postData.likesCount} 
           </button>
           <div className={postCardStyles.spacer}></div>
           <button 
             className={postCardStyles.button} 
             onClick={() => setShowComments(true)}>
-            <MessageSquare size={20} /> {post.commentsCount}
+            <MessageSquare size={20} /> {postData.commentsCount}
           </button>
         </div>
       </div>
       
       {showComments && (
-        <Comments postId={post._id} onClose={() => setShowComments(false)} />
+        <Comments postId={postData._id} onClose={handleCommentsClose} />
       )}
+
 
       {showEditPost && (
         <EditPost
-          postId={post._id}
-          initialContent={post.content}
-          initialImageUrl={urlImage(post.image)}
+          postId={postData._id}
+          initialContent={postData.content}
+          initialImageUrl={urlImage(postData.image)}
           onClose={() => setShowEditPost(false)}
           onSave={(updatedPost) => {
-            post.content = updatedPost.content;
-            post.image = updatedPost.imageUrl;
+            setPostData(prev => ({
+              ...prev,
+              content: updatedPost.content,
+              image: updatedPost.imageUrl,
+            }));
             setShowEditPost(false);
           }}
         />

@@ -133,3 +133,15 @@
     background-color: #5c3f2e;
   }
   
+
+  @media screen and (max-width: 768px) {
+    .chatContainer {
+      bottom: 3.5rem;
+      right: 0.5rem;
+    }
+  
+    .chatWindow {
+      width: 15rem;
+    }
+    
+  }

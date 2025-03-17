@@ -41,7 +41,11 @@ export default function EditPost({
         const uploadResponse = await uploadImage(formData);
         imageUrl = uploadResponse.substring(15);
       }
-  
+
+      if(imageUrl[0] === 'h'){
+        imageUrl = imageUrl.substring(36);
+      }
+
       const postData = {
         content,
         image: imageUrl,
@@ -60,7 +64,6 @@ export default function EditPost({
     }
   };
   
-
   return (
     <div className={styles.overlay}>
       <div className={styles.popupContainer}>

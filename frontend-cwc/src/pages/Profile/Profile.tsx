@@ -93,15 +93,15 @@ export default function Profile() {
           <h2 className={styles.profileName}>{userData.name}</h2>
           <div className={styles.statsRow}>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{userData.followers_count || 0}</span>
+              <span className={styles.statNumber}>{userData.followers_count || 0} </span>
               <span className={styles.statLabel}>Followers</span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{userData.following_count || 0}</span>
+              <span className={styles.statNumber}>{userData.following_count || 0} </span>
               <span className={styles.statLabel}>Following</span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{userData.posts_count || 0}</span>
+              <span className={styles.statNumber}>{userData.posts_count || 0} </span>
               <span className={styles.statLabel}>Posts</span>
             </div>
           </div>
