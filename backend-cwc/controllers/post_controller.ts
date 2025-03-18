@@ -33,16 +33,36 @@ const createPost = async (req: Request, res: Response) => {
 
 const getPosts = async (req: Request, res: Response) => {
     try {
-        const posts = await Post.find();
-        if (!posts) {
-            res.status(404).json({ message: "No posts found" });
-            return;
-        }
-        res.status(200).json({posts : posts , success: true });
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = 6;
+        const skip = (page - 1) * limit;
+
+        const posts = await Post.find()
+            .populate({
+                path: "userId",
+                select: "name profile_pic",
+                model: "User"
+            }) 
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean(); 
+
+ 
+
+        res.status(200).json({
+            posts,
+            currentPage: page,
+            totalPages: Math.ceil((await Post.countDocuments()) / limit),
+            hasMore: skip + limit < (await Post.countDocuments()),
+            success: true
+        });
     } catch (error) {
+        console.error("❌ API Error:", error);
         res.status(500).json({ message: "Internal server error" });
     }
-}
+};
+
 
 const getPostById = async (req: Request, res: Response) => {
     try {
@@ -57,23 +77,60 @@ const getPostById = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
-
-const getPostByUserId = async (req: Request, res: Response) => {
+const getPaginatedPostsByUserId = async (req: Request, res: Response) => {
     try {
-        const userId = req.params.userId; 
-        const posts = await Post.find({
-            userId: userId 
-        });
-        if (!posts) {
-            res.status(404).json({ message: "No posts found" });
-            return;
-        }
-        res.status(200).json({ posts ,success: true });
+      const userId = req.params.userId;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 6;
+      const skip = (page - 1) * limit;
+  
+      const posts = await Post.find({ userId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+  
+      const totalPosts = await Post.countDocuments({ userId });
+  
+      res.status(200).json({
+        posts,
+        currentPage: page,
+        totalPages: Math.ceil(totalPosts / limit),
+        hasMore: skip + limit < totalPosts,
+        success: true,
+      });
     } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+      console.error("❌ API Error:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-}
+  };
 
+  const getPostByUserId = async (req: Request, res: Response) => {
+    try {
+      const userId = req.params.userId;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 6; // or any default you prefer
+      const skip = (page - 1) * limit;
+  
+      const posts = await Post.find({ userId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+        
+      const totalPosts = await Post.countDocuments({ userId });
+  
+      res.status(200).json({
+        posts,
+        currentPage: page,
+        totalPages: Math.ceil(totalPosts / limit),
+        hasMore: skip + limit < totalPosts,
+        success: true,
+      });
+    } catch (error) {
+      console.error("❌ API Error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
 const updatePostById = async (req: Request, res: Response) => {
     try {
         const postId = req.params.postId;
@@ -207,7 +264,7 @@ const removeCommentToPost = async (req: Request, res: Response) => {
     }
 };
  
-const PostController = { createPost, getPosts, getPostById, getPostByUserId, updatePostById, deletePostById , updateLikeToPost , removeLikeToPost ,updateCommentToPost , removeCommentToPost};
+const PostController = { createPost, getPosts, getPostById, getPostByUserId, updatePostById, deletePostById , updateLikeToPost , removeLikeToPost ,updateCommentToPost , removeCommentToPost,getPaginatedPostsByUserId};
 
 export default PostController;
 

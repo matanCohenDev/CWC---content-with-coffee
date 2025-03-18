@@ -4,19 +4,20 @@ import { Delete, Edit, Heart, MessageSquare } from "lucide-react";
 import EditPost from "./EditPost/EditPost";
 import { 
   urlImage, 
+  urlProfilePic, 
   getUsernameById, 
   likePost, 
   removeLike, 
   checkIfUserAlreadyLiked, 
   getUserIdFromToken, 
-  deletePost ,
+  deletePost,
   getCommentsByPostId
 } from "../../../../services/apiServices";
 import { useEffect, useState } from "react";
 
 interface Post {
   _id: string;
-  userId: string;
+  userId: string | { name: string; profile_pic: string };
   content: string;
   image: string;
   likesCount: number;
@@ -27,9 +28,10 @@ interface PostCardProps {
   post: Post;
   variant?: "small" | "large";
   profileId?: "userProfile" | "profile" | "other";
+  forceSmallHeight?: boolean;
 }
 
-export default function PostCard({ post, variant = "small", profileId = "other"  }: PostCardProps) {
+export default function PostCard({ post, forceSmallHeight, variant = "small", profileId = "other"  }: PostCardProps) {
   const [username, setUsername] = useState<string>('');
   const [liked, setLiked] = useState<boolean>(false);
   const [likeId, setLikeId] = useState<string>('');
@@ -37,6 +39,16 @@ export default function PostCard({ post, variant = "small", profileId = "other" 
   const [showEditPost, setShowEditPost] = useState<boolean>(false);
   const [postData, setPostData] = useState<Post>(post);
   const userId = getUserIdFromToken(localStorage.getItem("accessToken") || "");
+
+  useEffect(() => {
+    if (typeof post.userId === "object") {
+      setUsername(post.userId.name);
+    } else {
+      getUsernameById(post.userId).then((username) => {
+        setUsername(username);
+      });
+    }
+  }, [post.userId]);
 
   useEffect(() => {
     const checkIfUserLiked = async () => {
@@ -60,12 +72,6 @@ export default function PostCard({ post, variant = "small", profileId = "other" 
     checkIfUserLiked();
   }, [post._id, userId]);
   
-  useEffect(() => {
-    getUsernameById(post.userId).then((username) => {
-      setUsername(username);
-    });
-  }, [post.userId]);
-
   const onhandleClickLike = async () => {
     try {
       const response = await likePost(post._id);
@@ -118,12 +124,20 @@ export default function PostCard({ post, variant = "small", profileId = "other" 
     }
   };
   
-
   return (
     <>
-      <div className={`${postCardStyles.postCard} ${variant === "large" ? postCardStyles.large : postCardStyles.small}`}>
+      <div className={`${postCardStyles.postCard} ${forceSmallHeight ? postCardStyles.smallHeight : ""} ${variant === "large" ? postCardStyles.large : postCardStyles.small}`}>
         <div className={postCardStyles.header}>
-          <span className={postCardStyles.username}>{username}</span>
+          <div className={postCardStyles.userInfo}>
+            {typeof post.userId === "object" && post.userId.profile_pic && (
+              <img 
+                src={urlProfilePic(post.userId.profile_pic)} 
+                alt="Profile" 
+                className={postCardStyles.profilePic} 
+              />
+            )}
+            <span className={postCardStyles.username}>{username}</span>
+          </div>
           {variant === "large" && profileId === "profile" && (
             <div className={postCardStyles.actions}>
               <button 
@@ -168,7 +182,6 @@ export default function PostCard({ post, variant = "small", profileId = "other" 
       {showComments && (
         <Comments postId={postData._id} onClose={handleCommentsClose} />
       )}
-
 
       {showEditPost && (
         <EditPost

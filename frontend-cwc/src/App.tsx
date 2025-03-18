@@ -6,9 +6,13 @@ import Feed from "./pages/Feed-page/Feed";
 import Profile from "./pages/Profile/Profile";
 import UserProfile from "./pages/User-profile/UserProfile";
 import ProtectedRoute from "./components/ProtectedRoute"; 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+const queryClient = new QueryClient();
 function App() {
   return (
+    <QueryClientProvider client={queryClient}> 
+
     <UserProvider>
       <Router>
         <Routes>
@@ -43,6 +47,8 @@ function App() {
         </Routes>
       </Router>
     </UserProvider>
+    </QueryClientProvider>
+
   );
 }
 

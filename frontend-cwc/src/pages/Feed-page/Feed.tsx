@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styles from "./feed.module.css";
 import BottomBar from "./components/BottomBar/BottomBar";
 import PostCard from "./components/PostCard/PostCard";
@@ -7,28 +7,19 @@ import DecorativeSvgs from "./components/DecorativeSvgs/DecorativeSvgs";
 import { Send } from "lucide-react";
 import logo from "../../assets/pics/landingPage-pics/logo.png";
 import CoffeeSmartChat from "./components/chatbot/chatbot";
-import { getPosts, logoutUser } from "../../services/apiServices";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
+import { logoutUser } from "../../services/apiServices";
+import { useFetchPosts } from "../../hooks/useFetchPosts";
 
 const Feed: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [posts, setPosts] = useState<any[]>([]);
   const navigate = useNavigate();
   const { setUser, setToken } = useUser();
 
-  const loadPosts = async () => {
-    try {
-      const postsArray = await getPosts();
-      setPosts(postsArray);
-    } catch (error) {
-      console.error("Failed to load posts:", error);
-    }
-  };
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error, refetch } = useFetchPosts();
 
-  useEffect(() => {
-    loadPosts();
-  }, []);
+  const posts = data?.pages.flatMap((page) => page.posts) || [];
 
   const handleLogout = async () => {
     try {
@@ -62,12 +53,26 @@ const Feed: React.FC = () => {
       <div className={styles.feedContainer}>
         <DecorativeSvgs />
         <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
         <div className={styles.postsContainer}>
-          {posts.slice().reverse().map((post) => (
+          {error && <p>Error loading posts</p>}
+          {posts.length === 0 && !isFetchingNextPage && <p>No posts available</p>}
+          {posts.map((post) => (
             <PostCard key={post._id} post={post} />
           ))}
         </div>
-        <BottomBar onPostCreated={loadPosts} />
+
+        {isFetchingNextPage && <div className={styles.loader}>Loading more...</div>}
+
+        {hasNextPage && !isFetchingNextPage && (
+          <div className={styles.loadMoreContainer}>
+          <button className={styles.loadMoreBtn} onClick={() => fetchNextPage()}>
+                Load More
+          </button>
+          </div>
+        )}
+
+        <BottomBar onPostCreated={refetch} />
         <CoffeeSmartChat />
       </div>
 
