@@ -8,10 +8,9 @@ export default function CoffeeSmartChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [userMessage, setUserMessage] = useState('');
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'שלום! אני צ׳אט בוט קפה חכם, איך אוכל לעזור?' },
+    { sender: 'bot', text: 'Hello!,Im a smart Chat-Bot.How can i help?' },
   ]);
 
-  // Create a ref for the messages container
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const handleToggle = () => {
@@ -37,7 +36,7 @@ export default function CoffeeSmartChat() {
       console.error(error);
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: 'bot', text: 'אופס, ישנה בעיה בטעינת התוכן' },
+        { sender: 'bot', text: 'ops,there was a problem..' },
       ]);
     }
   };
@@ -53,7 +52,7 @@ export default function CoffeeSmartChat() {
     <div className={styles.chatContainer}>
       {!isOpen && (
         <button className={styles.chatBotToggleButton} onClick={handleToggle}>
-          צ׳אט חכם
+          Smart ChatBot
         </button>
       )}
       {isOpen && (
@@ -67,9 +66,9 @@ export default function CoffeeSmartChat() {
           <div className={styles.chatCard}>
             <div className={styles.chatCardContent}>
               <div className={styles.chatHeader}>
-                <div className={styles.chatTitle}>צ׳אט קפה חכם</div>
+                <div className={styles.chatTitle}>Smart Coffee Chat</div>
                 <button className={styles.closeButton} onClick={handleToggle}>
-                  סגור
+                  Close
                 </button>
               </div>
               <div className={styles.messagesContainer} ref={messagesContainerRef}>
@@ -89,7 +88,7 @@ export default function CoffeeSmartChat() {
               <div className={styles.inputContainer}>
                 <input
                   className={styles.inputField}
-                  placeholder="הקלד הודעה..."
+                  placeholder="type a message..."
                   value={userMessage}
                   onChange={(e) => setUserMessage(e.target.value)}
                   onKeyDown={(e) => {
