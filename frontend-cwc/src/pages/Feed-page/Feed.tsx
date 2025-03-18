@@ -77,7 +77,7 @@ const Feed: React.FC = () => {
       </div>
 
       <button className={styles.logoutButton} onClick={handleLogout}>
-        התנתקות
+        Logout
       </button>
     </div>
   );

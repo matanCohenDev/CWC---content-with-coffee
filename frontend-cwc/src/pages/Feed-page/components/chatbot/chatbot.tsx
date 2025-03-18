@@ -8,7 +8,7 @@ export default function CoffeeSmartChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [userMessage, setUserMessage] = useState('');
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'שלום! אני צ׳אט בוט קפה חכם, איך אוכל לעזור?' },
+    { sender: 'bot', text: 'hello, Im a smart coffee chatbot, how can I help you?' },
   ]);
 
   // Create a ref for the messages container
@@ -37,7 +37,7 @@ export default function CoffeeSmartChat() {
       console.error(error);
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: 'bot', text: 'אופס, ישנה בעיה בטעינת התוכן' },
+        { sender: 'bot', text: 'sorry, there was an error' },
       ]);
     }
   };
@@ -53,7 +53,7 @@ export default function CoffeeSmartChat() {
     <div className={styles.chatContainer}>
       {!isOpen && (
         <button className={styles.chatBotToggleButton} onClick={handleToggle}>
-          צ׳אט חכם
+          Smart Chat
         </button>
       )}
       {isOpen && (
@@ -67,9 +67,9 @@ export default function CoffeeSmartChat() {
           <div className={styles.chatCard}>
             <div className={styles.chatCardContent}>
               <div className={styles.chatHeader}>
-                <div className={styles.chatTitle}>צ׳אט קפה חכם</div>
+                <div className={styles.chatTitle}>Smart Coffee Chat</div>
                 <button className={styles.closeButton} onClick={handleToggle}>
-                  סגור
+                  Close
                 </button>
               </div>
               <div className={styles.messagesContainer} ref={messagesContainerRef}>
@@ -89,7 +89,7 @@ export default function CoffeeSmartChat() {
               <div className={styles.inputContainer}>
                 <input
                   className={styles.inputField}
-                  placeholder="הקלד הודעה..."
+                  placeholder="Type your message here..."
                   value={userMessage}
                   onChange={(e) => setUserMessage(e.target.value)}
                   onKeyDown={(e) => {
