@@ -77,39 +77,13 @@ const getPostById = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
-const getPaginatedPostsByUserId = async (req: Request, res: Response) => {
-    try {
-      const userId = req.params.userId;
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 6;
-      const skip = (page - 1) * limit;
-  
-      const posts = await Post.find({ userId })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean();
-  
-      const totalPosts = await Post.countDocuments({ userId });
-  
-      res.status(200).json({
-        posts,
-        currentPage: page,
-        totalPages: Math.ceil(totalPosts / limit),
-        hasMore: skip + limit < totalPosts,
-        success: true,
-      });
-    } catch (error) {
-      console.error("❌ API Error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  };
+
 
   const getPostByUserId = async (req: Request, res: Response) => {
     try {
       const userId = req.params.userId;
       const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 6; // or any default you prefer
+      const limit = parseInt(req.query.limit as string) || 6; 
       const skip = (page - 1) * limit;
   
       const posts = await Post.find({ userId })
@@ -264,7 +238,7 @@ const removeCommentToPost = async (req: Request, res: Response) => {
     }
 };
  
-const PostController = { createPost, getPosts, getPostById, getPostByUserId, updatePostById, deletePostById , updateLikeToPost , removeLikeToPost ,updateCommentToPost , removeCommentToPost,getPaginatedPostsByUserId};
+const PostController = { createPost, getPosts, getPostById, getPostByUserId, updatePostById, deletePostById , updateLikeToPost , removeLikeToPost ,updateCommentToPost , removeCommentToPost};
 
 export default PostController;
 
