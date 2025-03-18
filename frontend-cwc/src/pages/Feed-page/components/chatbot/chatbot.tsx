@@ -9,7 +9,7 @@ export default function CoffeeSmartChat() {
   const [userMessage, setUserMessage] = useState('');
   const [messages, setMessages] = useState([
 
-    { sender: 'bot', text: 'hello, Im a smart coffee chatbot, how can I help you?' },
+    { sender: 'bot', text: 'hello, Im a smart coffee chatbot, how can I help you?' },])
 
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
