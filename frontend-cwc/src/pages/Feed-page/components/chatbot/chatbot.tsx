@@ -8,8 +8,9 @@ export default function CoffeeSmartChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [userMessage, setUserMessage] = useState('');
   const [messages, setMessages] = useState([
-    { sender: 'bot', text: 'Hello!,Im a smart Chat-Bot.How can i help?' },
-  ]);
+
+    { sender: 'bot', text: 'hello, Im a smart coffee chatbot, how can I help you?' },
+
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -36,7 +37,11 @@ export default function CoffeeSmartChat() {
       console.error(error);
       setMessages((prevMessages) => [
         ...prevMessages,
-        { sender: 'bot', text: 'ops,there was a problem..' },
+
+        { sender: 'bot', text: 'sorry, there was an error' },
+
+ 
+
       ]);
     }
   };
@@ -52,7 +57,9 @@ export default function CoffeeSmartChat() {
     <div className={styles.chatContainer}>
       {!isOpen && (
         <button className={styles.chatBotToggleButton} onClick={handleToggle}>
-          Smart ChatBot
+
+          Smart Chat
+
         </button>
       )}
       {isOpen && (
@@ -88,7 +95,10 @@ export default function CoffeeSmartChat() {
               <div className={styles.inputContainer}>
                 <input
                   className={styles.inputField}
-                  placeholder="type a message..."
+
+                  placeholder="Type your message here..."
+
+
                   value={userMessage}
                   onChange={(e) => setUserMessage(e.target.value)}
                   onKeyDown={(e) => {
