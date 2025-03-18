@@ -78,6 +78,28 @@ body {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
+.loadMoreContainer {
+  display: flex;
+  justify-content: center; 
+  margin-top: 20px;
+}
+
+.loadMoreBtn {
+  background-color: #6F4E37;
+  color: #EDE0D4;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.loadMoreBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
 
 @media screen and (max-width: 768px) {
   .headerContainer {

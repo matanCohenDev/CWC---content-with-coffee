@@ -10,7 +10,7 @@ interface User {
   favorite_coffee?: string;
   location?: string;
 }
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+ export const baseURL = import.meta.env.VITE_API_BASE_URL;
 const api = axios.create({
   baseURL,
   withCredentials: true,
@@ -192,14 +192,15 @@ export function getAllUsers() {
   return api.get("/api/user/getUsers");
 }
 
-export const getPosts = async () => {
+export const getPosts = async (page = 1, limit = 10) => {
   try {
-    const response = await api.get("/api/post/getPosts");
-    return response.data.posts;
+    const response = await api.get(`/api/post/getPosts?page=${page}&limit=${limit}`);
+    return response.data;
   } catch (error) {
     throw error;
   }
-}
+};
+
 
 export const urlImage = (image: string) => {
   return `${baseURL}/uploads/posts/${image}`;

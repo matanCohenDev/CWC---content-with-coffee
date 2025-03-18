@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" fill="none" stroke="#EADDD3" stroke-width="1">
+  <!-- גוף הכוס -->
+  <path d="M12 12 H38 V35 A8 8 0 0 1 30 43 H20 A8 8 0 0 1 12 35 Z" />
+
+  <!-- הידית של הכוס -->
+  <path d="M38 18 A8 8 0 0 1 46 26 A8 8 0 0 1 38 34" />
+
+  <!-- בסיס הכוס -->
+  <rect x="18" y="43" width="14" height="4" rx="2" />
+
+  <!-- קווי אדים (קפה חם) -->
+  <path d="M20 8 C22 5, 22 3, 20 1" stroke-width="1" />
+  <path d="M26 8 C28 5, 28 3, 26 1" stroke-width="1" />
+  <path d="M32 8 C34 5, 34 3, 32 1" stroke-width="1" />
+</svg>

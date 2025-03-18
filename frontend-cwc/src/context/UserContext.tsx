@@ -30,7 +30,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           const userData = await fetchUser();
           if (userData) {
             setUser(userData);
-            console.log("User loaded:", userData);
           }
         }
       } catch (error) {

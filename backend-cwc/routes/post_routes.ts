@@ -437,5 +437,7 @@ router.post("/commentPost/:postId", authMiddleware, PostControllers.updateCommen
  *         description: Internal server error
  */
 router.delete("/removeComment/:postId", authMiddleware, PostControllers.removeCommentToPost);
+router.get("/getPostsByUserId/:userId",authMiddleware, PostControllers.getPaginatedPostsByUserId);
+
 
 export default router;

@@ -1,11 +1,10 @@
 import styles from "./profile.module.css";
-import { useLocation } from "react-router-dom";
-import { getAllPostsByUserId, urlProfilePic } from "../../services/apiServices";
+import { useLocation, useNavigate } from "react-router-dom";
+import { urlProfilePic } from "../../services/apiServices";
 import PostCard from "../Feed-page/components/PostCard/PostCard";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import EditPopup from "../../components/Edit-popup";
-import { useNavigate } from "react-router-dom";
-
+import { useFetchUserPosts } from "../../hooks/useFetchUserPosts"; // Import the hook
 
 interface User {
   _id: string;
@@ -31,23 +30,13 @@ interface Post {
 
 export default function Profile() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { user: initialUser } = location.state as { user: User };
+  const { state } = useLocation();
+  const { user: initialUser } = state as { user: User };
   const [userData, setUserData] = useState<User>(initialUser);
-  const [posts, setPosts] = useState<Post[]>([]);
   const [showEditPopup, setShowEditPopup] = useState(false);
 
-  useEffect(() => {
-    getAllPostsByUserId(userData._id)
-      .then((data) => {
-        if (data.posts) {
-          setPosts(data.posts);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching posts:", error);
-      });
-  }, [userData._id]);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, error } = useFetchUserPosts(userData._id);
+  const posts: Post[] = data?.pages.flatMap((page: any) => page.posts) || [];
 
   const handleOpenEditPopup = () => {
     setShowEditPopup(true);
@@ -81,7 +70,6 @@ export default function Profile() {
         &larr; Back to Feed
       </button>
       <div className={styles.profileHeader}>
-      
         <div className={styles.profilePicContainer} onClick={() => console.log("Open upload image modal")}>
           <img
             src={urlProfilePic(userData.profile_pic)}
@@ -93,15 +81,15 @@ export default function Profile() {
           <h2 className={styles.profileName}>{userData.name}</h2>
           <div className={styles.statsRow}>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{userData.followers_count || 0} </span>
+              <span className={styles.statNumber}>{userData.followers_count || 0}</span>
               <span className={styles.statLabel}>Followers</span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{userData.following_count || 0} </span>
+              <span className={styles.statNumber}>{userData.following_count || 0}</span>
               <span className={styles.statLabel}>Following</span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statNumber}>{userData.posts_count || 0} </span>
+              <span className={styles.statNumber}>{userData.posts_count || 0}</span>
               <span className={styles.statLabel}>Posts</span>
             </div>
           </div>
@@ -119,12 +107,22 @@ export default function Profile() {
       </div>
 
       <div className={styles.postsContainer}>
-        {Array.isArray(posts) ? (
-          posts.map((post) => <PostCard key={post._id} post={post} variant="large" profileId="profile" />)
-        ) : (
-          <p>No posts available</p>
-        )}
+        {error && <p>Error loading posts</p>}
+        {posts.length === 0 && !isFetchingNextPage && <p>No posts available</p>}
+        {posts.map((post) => (
+          <PostCard key={post._id} post={post} variant="large" profileId="profile" forceSmallHeight />
+        ))}
       </div>
+
+      {isFetchingNextPage && <div className={styles.loader}>Loading more...</div>}
+
+      {hasNextPage && !isFetchingNextPage && (
+        <div className={styles.loadMoreContainer}>
+          <button className={styles.loadMoreBtn} onClick={() => fetchNextPage()}>
+            Load More
+          </button>
+        </div>
+      )}
 
       {showEditPopup && (
         <EditPopup
