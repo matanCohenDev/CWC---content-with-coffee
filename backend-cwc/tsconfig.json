@@ -108,7 +108,7 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true  ,
     "outDir": "./dist" ,
-    "types": ["node", "multer", "swagger-jsdoc", "swagger-ui-express"],
+    "types": ["node", "multer", "swagger-jsdoc", "swagger-ui-express" , "jest"],
 
                                  /* Skip type checking all .d.ts files. */
   }
