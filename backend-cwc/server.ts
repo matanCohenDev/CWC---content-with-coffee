@@ -136,7 +136,7 @@ const swaggerOptions = {
           version: "1.0.0",
           description: "User authentication API"
       },
-      servers: [{ url: process.env.BASE_URL }]
+      servers: [{ url: process.env.SWAGGER_URL  }]
   },
   apis: ["./routes/*.ts"]
 };
