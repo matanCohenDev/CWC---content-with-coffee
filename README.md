@@ -32,7 +32,7 @@ The project was built with the following objectives:
 To get started with the project, follow these steps:
 
 1. **Clone the repository:**
-   git clone https://github.com/yourusername/CWC-Content-With-Coffee.git
+   git clone https://github.com/matanCohenDev/CWC---content-with-coffee.git
 
 2. **Navigate into the project directory:**
    cd CWC--content-with-coffee
